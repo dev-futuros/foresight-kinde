@@ -323,14 +323,19 @@ export const getStyles = (): string => `
   }
 
   /* ── Buttons ──────────────────────────────────────────────────── */
-  /* Primary submit button — gold "Continue". Selector intentionally
-     scoped to variant="primary" only; the dropped \`button[type="submit"]\`
-     fallback was over-matching the OAuth provider buttons (which Kinde
-     also renders as submit buttons under their own form), painting them
-     gold. The :has() exclusions below catch the case where Kinde tags
-     social buttons as variant="primary" too — we strip the gold when the
-     button contains a provider icon. */
-  [data-kinde-button][data-kinde-button-variant="primary"]:not(:has(img[alt*="Google" i])):not(:has(img[alt*="LinkedIn" i])):not(:has(img[alt*="Apple" i])):not(:has(img[alt*="Microsoft" i])):not(:has(img[alt*="Facebook" i])):not(:has(img[alt*="GitHub" i])):not(:has(img[src*="google"])):not(:has(img[src*="linkedin"])):not(:has(img[src*="apple"])):not(:has(img[src*="microsoft"])) {
+  /* DOM verified by browser inspection on auth-dev.futuros.io:
+     - Primary submit: button.kinde-button-variant-primary
+     - Social buttons: button.kinde-button-variant-secondary
+       containing svg.kinde-icon (NOT <img>)
+     - Container:     ul.kinde-layout-auth-buttons (already display: grid,
+                      one implicit column → vertical stacking)
+     - Items:         li[data-kinde-layout-auth-buttons-item="true"]
+                      (display: list-item, full-width — the actual cause
+                      of vertical stacking even though parent is grid). */
+
+  /* Primary submit button — gold "Continue". */
+  .kinde-button-variant-primary,
+  [data-kinde-button][data-kinde-button-variant="primary"] {
     background: ${tokens.gold} !important;
     color: #0a0a0a !important;
     border: 1px solid ${tokens.goldSoft} !important;
@@ -346,7 +351,8 @@ export const getStyles = (): string => `
     width: 100% !important;
     margin-top: 4px !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:not(:has(img[alt*="Google" i])):not(:has(img[alt*="LinkedIn" i])):not(:has(img[alt*="Apple" i])):not(:has(img[alt*="Microsoft" i])):not(:has(img[alt*="Facebook" i])):not(:has(img[alt*="GitHub" i])):hover {
+  .kinde-button-variant-primary:hover,
+  [data-kinde-button][data-kinde-button-variant="primary"]:hover {
     background: ${tokens.gold} !important;
     color: #0a0a0a !important;
     border-color: ${tokens.goldSoft} !important;
@@ -355,179 +361,74 @@ export const getStyles = (): string => `
       0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
       0 0 32px hsla(40, 60%, 56%, 0.22) !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:active {
+  .kinde-button-variant-primary:active {
     transform: scale(0.985) !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:focus-visible {
+  .kinde-button-variant-primary:focus-visible {
     outline: 2px solid ${tokens.goldSoft} !important;
     outline-offset: 2px !important;
   }
 
   /* ── Social / OAuth provider buttons ──────────────────────────── */
-  /* Match any button that contains a known provider icon. This is the
-     reliable discriminator regardless of which variant Kinde tags them
-     with internally. The whole row sits in a horizontal flex so the
-     buttons appear side-by-side, icon-only — saves vertical space. */
-  [data-kinde-button]:has(img[alt*="Google" i]),
-  [data-kinde-button]:has(img[alt*="LinkedIn" i]),
-  [data-kinde-button]:has(img[alt*="Apple" i]),
-  [data-kinde-button]:has(img[alt*="Microsoft" i]),
-  [data-kinde-button]:has(img[alt*="Facebook" i]),
-  [data-kinde-button]:has(img[alt*="GitHub" i]),
-  [data-kinde-button]:has(img[src*="google"]),
-  [data-kinde-button]:has(img[src*="linkedin"]),
-  [data-kinde-button]:has(img[src*="apple"]),
-  [data-kinde-button]:has(img[src*="microsoft"]),
-  [data-kinde-button][data-kinde-button-variant="secondary"],
-  [data-kinde-button][data-kinde-button-variant="uncontained"] {
+  /* The buttons themselves: dark surface, icon-only (text hidden). */
+  .kinde-button-variant-secondary,
+  [data-kinde-button][data-kinde-button-variant="secondary"] {
     background: ${tokens.surface3} !important;
     color: ${tokens.ink} !important;
     border: 1px solid ${tokens.line} !important;
     border-radius: ${tokens.rMd} !important;
     cursor: pointer;
     transition: background 150ms, border-color 150ms !important;
-    /* icon-only sizing */
-    flex: 1 1 0 !important;
-    width: auto !important;
+    /* icon-only sizing — fill the grid cell, ~44px tall */
+    width: 100% !important;
     padding: 10px !important;
-    min-height: 40px !important;
+    min-height: 44px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 0 !important;
-    /* hide the "Continue with X" text, keep the icon visible */
+    /* hide the "Continue with X" text, keep the inline SVG visible */
     font-size: 0 !important;
     text-indent: -9999px;
     overflow: hidden;
   }
-  [data-kinde-button]:has(img[alt*="Google" i]):hover,
-  [data-kinde-button]:has(img[alt*="LinkedIn" i]):hover,
-  [data-kinde-button]:has(img[alt*="Apple" i]):hover,
-  [data-kinde-button]:has(img[alt*="Microsoft" i]):hover,
-  [data-kinde-button]:has(img[alt*="Facebook" i]):hover,
-  [data-kinde-button]:has(img[alt*="GitHub" i]):hover,
-  [data-kinde-button][data-kinde-button-variant="secondary"]:hover,
-  [data-kinde-button][data-kinde-button-variant="uncontained"]:hover {
+  .kinde-button-variant-secondary:hover,
+  [data-kinde-button][data-kinde-button-variant="secondary"]:hover {
     background: ${tokens.surfaceHi} !important;
     color: ${tokens.ink} !important;
     border-color: ${tokens.lineStrong} !important;
   }
-  /* Restore icon visibility (we killed font-size on the parent) */
-  [data-kinde-button]:has(img) img,
-  [data-kinde-button]:has(img) svg {
+  /* Restore the SVG icon (we killed font-size on the button). */
+  .kinde-button-variant-secondary .kinde-icon,
+  [data-kinde-button][data-kinde-button-variant="secondary"] svg {
     text-indent: 0 !important;
     font-size: initial !important;
-    width: 18px !important;
-    height: 18px !important;
-    object-fit: contain !important;
+    width: 20px !important;
+    height: 20px !important;
     flex-shrink: 0 !important;
   }
 
-  /* ── Layout the social buttons in a horizontal row ─────────────
-     Kinde's container DOM isn't documented, so we cast a wide net.
-     Cases we cover:
-       A. Buttons are direct siblings of a shared parent
-       B. Each button is wrapped in its own intermediate element
-       C. The whole group is in a <ul><li> list
-     Each rule uses :has() to target the right ancestor without
-     needing to know its tag/attribute name in advance. */
-
-  /* A — immediate parent of any social button becomes flex-row.
-     :has(> X) matches if X is a DIRECT child, which is what we want. */
-  *:has(> [data-kinde-button]:has(img[alt*="Google" i])),
-  *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
-  *:has(> [data-kinde-button]:has(img[alt*="Apple" i])),
-  *:has(> [data-kinde-button]:has(img[alt*="Microsoft" i])),
-  *:has(> [data-kinde-button]:has(img[alt*="Facebook" i])),
-  *:has(> [data-kinde-button]:has(img[alt*="GitHub" i])) {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    margin-bottom: 8px !important;
-    align-items: stretch !important;
-    width: 100% !important;
-  }
-
-  /* B — if each button has its own wrapper, the grandparent becomes
-     the flex container. We confirm both Google AND LinkedIn appear as
-     nested children to be sure we're targeting the right level. */
-  *:has(> *:has(> [data-kinde-button]:has(img[alt*="Google" i]))):has(> *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i]))),
-  *:has(> *:has(> [data-kinde-button]:has(img[alt*="Apple" i]))):has(> *:has(> [data-kinde-button]:has(img[alt*="Microsoft" i]))) {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    margin-bottom: 8px !important;
-    width: 100% !important;
-  }
-
-  /* B (cont.) — and each individual wrapper around a social button
-     collapses to its content width so the buttons sit side-by-side. */
-  *:has(> [data-kinde-button]:has(img[alt*="Google" i])) > *:has(> [data-kinde-button]:has(img[alt*="Google" i])),
-  *:has(> *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i]))) > *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
-  div:has(> [data-kinde-button]:has(img[alt*="Google" i])),
-  div:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
-  div:has(> [data-kinde-button]:has(img[alt*="Apple" i])),
-  div:has(> [data-kinde-button]:has(img[alt*="Microsoft" i])) {
-    flex: 1 1 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-  }
-
-  /* C — <ul>/<li> structure (some Kinde widgets use semantic lists). */
-  ul:has([data-kinde-button] img[alt*="Google" i]),
-  ul:has([data-kinde-button] img[alt*="LinkedIn" i]),
-  ul:has([data-kinde-button] img[alt*="Apple" i]),
-  ul:has([data-kinde-button] img[alt*="Microsoft" i]) {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
+  /* ── Social buttons container ─────────────────────────────────── */
+  /* The container is already display: grid. Give it explicit columns
+     so all providers sit side-by-side (auto-fit lets it gracefully
+     wrap to two rows if you add many providers later). The <li>s
+     drop their list-item semantics and stretch into their grid cell. */
+  .kinde-layout-auth-buttons,
+  ul[data-kinde-layout-auth-buttons="true"] {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)) !important;
     gap: 8px !important;
     list-style: none !important;
     padding: 0 !important;
-    margin: 0 0 8px 0 !important;
+    margin: 0 0 4px 0 !important;
     width: 100% !important;
   }
-  li:has([data-kinde-button] img[alt*="Google" i]),
-  li:has([data-kinde-button] img[alt*="LinkedIn" i]),
-  li:has([data-kinde-button] img[alt*="Apple" i]),
-  li:has([data-kinde-button] img[alt*="Microsoft" i]) {
-    flex: 1 1 auto !important;
-    width: auto !important;
+  li[data-kinde-layout-auth-buttons-item="true"] {
     list-style: none !important;
+    display: block !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  /* Fall-through: documented attribute names. Harmless if absent. */
-  [data-kinde-social-providers],
-  [data-kinde-social-buttons],
-  [data-kinde-buttons-group],
-  [data-kinde-oauth-providers] {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    width: 100% !important;
-    margin-bottom: 8px !important;
-  }
-
-  /* Last-resort universal fix: ANY ancestor *inside the card* that
-     contains both Google AND LinkedIn (or other pairs) gets
-     flex-direction: row. Setting just flex-direction (not display)
-     is a no-op on non-flex elements but flips a flex-column wrapper
-     to flex-row — the most common cause of vertical-stacked social
-     buttons.
-     Scoped under .auth-card to avoid touching .auth-shell, which
-     is itself a flex-column. */
-  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="LinkedIn" i]),
-  .auth-card *:has([data-kinde-button] img[alt*="Apple" i]):has([data-kinde-button] img[alt*="Microsoft" i]),
-  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="Apple" i]),
-  .auth-card *:has([data-kinde-button] img[alt*="LinkedIn" i]):has([data-kinde-button] img[alt*="Microsoft" i]),
-  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="Facebook" i]) {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
   }
 
   /* Divider ("OR") between social and form — extra breathing room. */
