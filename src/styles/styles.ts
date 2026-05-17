@@ -423,20 +423,111 @@ export const getStyles = (): string => `
     flex-shrink: 0 !important;
   }
 
-  /* Container that holds the OAuth buttons — try several plausible
-     selectors so we catch whichever wrapper Kinde actually uses, and
-     turn it into a horizontal row. */
+  /* ── Layout the social buttons in a horizontal row ─────────────
+     Kinde's container DOM isn't documented, so we cast a wide net.
+     Cases we cover:
+       A. Buttons are direct siblings of a shared parent
+       B. Each button is wrapped in its own intermediate element
+       C. The whole group is in a <ul><li> list
+     Each rule uses :has() to target the right ancestor without
+     needing to know its tag/attribute name in advance. */
+
+  /* A — immediate parent of any social button becomes flex-row.
+     :has(> X) matches if X is a DIRECT child, which is what we want. */
+  *:has(> [data-kinde-button]:has(img[alt*="Google" i])),
+  *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
+  *:has(> [data-kinde-button]:has(img[alt*="Apple" i])),
+  *:has(> [data-kinde-button]:has(img[alt*="Microsoft" i])),
+  *:has(> [data-kinde-button]:has(img[alt*="Facebook" i])),
+  *:has(> [data-kinde-button]:has(img[alt*="GitHub" i])) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  /* B — if each button has its own wrapper, the grandparent becomes
+     the flex container. We confirm both Google AND LinkedIn appear as
+     nested children to be sure we're targeting the right level. */
+  *:has(> *:has(> [data-kinde-button]:has(img[alt*="Google" i]))):has(> *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i]))),
+  *:has(> *:has(> [data-kinde-button]:has(img[alt*="Apple" i]))):has(> *:has(> [data-kinde-button]:has(img[alt*="Microsoft" i]))) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+    width: 100% !important;
+  }
+
+  /* B (cont.) — and each individual wrapper around a social button
+     collapses to its content width so the buttons sit side-by-side. */
+  *:has(> [data-kinde-button]:has(img[alt*="Google" i])) > *:has(> [data-kinde-button]:has(img[alt*="Google" i])),
+  *:has(> *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i]))) > *:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
+  div:has(> [data-kinde-button]:has(img[alt*="Google" i])),
+  div:has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
+  div:has(> [data-kinde-button]:has(img[alt*="Apple" i])),
+  div:has(> [data-kinde-button]:has(img[alt*="Microsoft" i])) {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  /* C — <ul>/<li> structure (some Kinde widgets use semantic lists). */
+  ul:has([data-kinde-button] img[alt*="Google" i]),
+  ul:has([data-kinde-button] img[alt*="LinkedIn" i]),
+  ul:has([data-kinde-button] img[alt*="Apple" i]),
+  ul:has([data-kinde-button] img[alt*="Microsoft" i]) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 8px 0 !important;
+    width: 100% !important;
+  }
+  li:has([data-kinde-button] img[alt*="Google" i]),
+  li:has([data-kinde-button] img[alt*="LinkedIn" i]),
+  li:has([data-kinde-button] img[alt*="Apple" i]),
+  li:has([data-kinde-button] img[alt*="Microsoft" i]) {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Fall-through: documented attribute names. Harmless if absent. */
   [data-kinde-social-providers],
   [data-kinde-social-buttons],
   [data-kinde-buttons-group],
-  [data-kinde-oauth-providers],
-  div:has(> [data-kinde-button]:has(img[alt*="Google" i])):has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
-  div:has(> [data-kinde-button][data-kinde-button-variant="secondary"] + [data-kinde-button][data-kinde-button-variant="secondary"]) {
+  [data-kinde-oauth-providers] {
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: wrap !important;
     gap: 8px !important;
     width: 100% !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Last-resort universal fix: ANY ancestor *inside the card* that
+     contains both Google AND LinkedIn (or other pairs) gets
+     flex-direction: row. Setting just flex-direction (not display)
+     is a no-op on non-flex elements but flips a flex-column wrapper
+     to flex-row — the most common cause of vertical-stacked social
+     buttons.
+     Scoped under .auth-card to avoid touching .auth-shell, which
+     is itself a flex-column. */
+  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="LinkedIn" i]),
+  .auth-card *:has([data-kinde-button] img[alt*="Apple" i]):has([data-kinde-button] img[alt*="Microsoft" i]),
+  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="Apple" i]),
+  .auth-card *:has([data-kinde-button] img[alt*="LinkedIn" i]):has([data-kinde-button] img[alt*="Microsoft" i]),
+  .auth-card *:has([data-kinde-button] img[alt*="Google" i]):has([data-kinde-button] img[alt*="Facebook" i]) {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
   }
 
   /* Divider ("OR") between social and form — extra breathing room. */
