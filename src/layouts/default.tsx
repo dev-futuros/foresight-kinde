@@ -12,17 +12,23 @@ type DefaultLayoutProps = {
   lang: Lang;
   /** Localised "Terms & Conditions" label passed through to the footer. */
   termsLabel?: string;
+  /**
+   * Fresh OAuth-flow URL to restart with a new language. Passed straight
+   * through to LangSwitcher — see its prop comment for the rationale.
+   */
+  restartUrl: string;
 };
 
 export const DefaultLayout = ({
   children,
   lang,
   termsLabel,
+  restartUrl,
 }: DefaultLayoutProps): React.JSX.Element => (
   <div className="auth-shell">
     <Header />
     <main>{children}</main>
     <Footer lang={lang} termsLabel={termsLabel} />
-    <LangSwitcher activeLang={lang} />
+    <LangSwitcher activeLang={lang} restartUrl={restartUrl} />
   </div>
 );

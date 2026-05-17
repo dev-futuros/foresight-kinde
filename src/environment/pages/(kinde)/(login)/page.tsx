@@ -1,6 +1,6 @@
 "use server";
 
-import { type KindePageEvent } from "@kinde/infrastructure";
+import { getKindeLoginUrl, type KindePageEvent } from "@kinde/infrastructure";
 import React from "react";
 import { renderToString } from "react-dom/server.browser";
 import { Widget } from "../../../../components/widget";
@@ -13,7 +13,11 @@ const LoginPage = (event: KindePageEvent): React.JSX.Element => {
   const s = t(lang);
   return (
     <Root context={event.context} request={event.request}>
-      <DefaultLayout lang={lang} termsLabel={s.termsAndConditions}>
+      <DefaultLayout
+        lang={lang}
+        termsLabel={s.termsAndConditions}
+        restartUrl={getKindeLoginUrl()}
+      >
         <Widget
           brandTag={s.brandTag}
           eyebrow={s.loginEyebrow}

@@ -5,6 +5,15 @@ import React from "react";
 type LangSwitcherProps = {
   /** Current resolved language code (our app's view — 'ca' / 'en' / 'es'). */
   activeLang: "ca" | "en" | "es";
+  /**
+   * The OAuth-flow start URL the switcher should navigate to (typically
+   * `getKindeLoginUrl()` or `getKindeRegisterUrl()` for whichever flow
+   * the parent page belongs to). Kinde only honours `lang=` at flow
+   * start, so the switcher must restart the flow with the new language
+   * rather than appending `?lang=` mid-flow. The inline script in
+   * root.tsx adds `?lang=...` to this URL on click.
+   */
+  restartUrl: string;
 };
 
 /**
@@ -12,22 +21,19 @@ type LangSwitcherProps = {
  * `.lang-toggle` styling so the auth pages feel like a continuation of
  * the marketing site.
  *
- * Each button is a plain anchor that reloads the page with a new `?lang=`
- * URL parameter. We map "ca" → "pl" for the Kinde-bound URL since Kinde
- * doesn't natively support Catalan and we hijack its Polish slot for
- * Catalan content (see src/i18n.ts for the reverse mapping).
+ * Each button's href is the fresh OAuth-flow URL (`restartUrl`). On
+ * click, an inline script in root.tsx adds/replaces the `lang` URL param
+ * and forces a full page navigation (bypassing Kinde's Roast XHR
+ * interceptor). The result: Kinde re-evaluates language detection from
+ * scratch with the new `lang` value at flow start, which is the only
+ * point Kinde actually honours the parameter.
  *
- * The `href` here only carries the `lang` param. Kinde's auth pages
- * include other state params (`psid`, `state`, `_:nav`, etc.) that we
- * MUST preserve across the language switch — otherwise the auth flow
- * breaks. A small inline script in root.tsx rewrites these anchors on
- * page load to merge `?lang=…` with whatever else is in the current
- * query string. The `data-url-lang` attribute is what the rewrite script
- * keys off; the static `href` stays as a fallback if the script can't
- * run for any reason.
+ * We map "ca" → "pl" via `data-url-lang` for the Kinde-bound URL since
+ * Kinde doesn't natively support Catalan and we hijack its Polish slot.
  */
 export const LangSwitcher = ({
   activeLang,
+  restartUrl,
 }: LangSwitcherProps): React.JSX.Element => {
   const langs: ReadonlyArray<{ display: string; code: string; key: "ca" | "en" | "es" }> = [
     { display: "ES", code: "es", key: "es" },
@@ -40,7 +46,7 @@ export const LangSwitcher = ({
       {langs.map((l) => (
         <a
           key={l.key}
-          href={`?lang=${l.code}`}
+          href={restartUrl}
           className={`lt-btn${activeLang === l.key ? " active" : ""}`}
           aria-current={activeLang === l.key ? "true" : undefined}
           data-url-lang={l.code}
