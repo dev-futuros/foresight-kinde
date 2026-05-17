@@ -9,7 +9,7 @@ import { Root } from "../../../../root";
 
 const LoginPage = (event: KindePageEvent): React.JSX.Element => (
   <Root context={event.context} request={event.request}>
-    <DefaultLayout page="login">
+    <DefaultLayout>
       <Widget
         eyebrow="Sign in"
         heading={event.context.widget.content.heading || "Welcome back"}

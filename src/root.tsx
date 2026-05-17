@@ -33,12 +33,19 @@ export const Root = ({
 
         <link href={getSVGFaviconUrl()} rel="icon" type="image/svg+xml" />
 
-        {/* Preconnect to Google Fonts for faster web-font fetch */}
+        {/* Preconnect + stylesheet for Playfair Display / DM Sans / DM Mono.
+            Using a <link rel="stylesheet"> instead of an @import inside our
+            inline <style> — link is more reliable across browsers and lets
+            the font stylesheet load in parallel with the page CSS. */}
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link
           crossOrigin="anonymous"
           href="https://fonts.gstatic.com"
           rel="preconnect"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap"
+          rel="stylesheet"
         />
 
         {getKindeRequiredCSS()}

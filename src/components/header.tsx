@@ -1,33 +1,11 @@
 "use server";
 
-import {
-  getKindeLoginUrl,
-  getKindeRegisterUrl,
-} from "@kinde/infrastructure";
 import React from "react";
 
-type HeaderProps = {
-  page: "login" | "register" | "default";
-};
-
-export const Header = ({ page }: HeaderProps): React.JSX.Element => {
-  const isLogin = page === "login";
-  const showSwitchLink = page === "login" || page === "register";
-
-  return (
-    <header className="auth-header">
-      <a className="brand-link" href="/" aria-label="Futuros">
-        <span className="brand-mark" aria-hidden="true">F</span>
-        <span className="brand-text">Futuros</span>
-      </a>
-      {showSwitchLink && (
-        <a
-          className="header-action"
-          href={isLogin ? getKindeRegisterUrl() : getKindeLoginUrl()}
-        >
-          {isLogin ? "Sign up" : "Sign in"}
-        </a>
-      )}
-    </header>
-  );
-};
+// The auth card carries the Futuros brand, and Kinde's widget renders its
+// own switch-flow link ("No account? Create one") in the card footer.
+// The chrome header is therefore intentionally empty — kept as a spacer so
+// the card doesn't crash into the viewport edge on tall screens.
+export const Header = (): React.JSX.Element => (
+  <header className="auth-header" aria-hidden="true" />
+);

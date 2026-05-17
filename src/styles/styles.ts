@@ -2,6 +2,12 @@
 // frontend/src/index.css + frontend/src/features/auth/auth.css.
 // Single source of truth: keep this in sync with those files when
 // the main app's design tokens change.
+//
+// Kinde exposes two extension points:
+//   1. CSS custom properties (--kinde-*)        → preferred when documented
+//   2. Style hook data attributes ([data-kinde-*]) → for everything else
+// Docs: https://docs.kinde.com/design/customize-with-code/styling-with-css/
+//       https://docs.kinde.com/design/customize-with-code/style-with-style-hooks/
 
 const tokens = {
   // surfaces
@@ -44,81 +50,40 @@ const tokens = {
 } as const;
 
 export const getStyles = (): string => `
-  /* ── Google Fonts (Playfair Display / DM Sans / DM Mono) ──────── */
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');
-
-  /* ── Kinde widget CSS variables ───────────────────────────────── */
+  /* ── Kinde CSS variables (documented in styling-with-css) ─────── */
   :root {
     --kinde-base-font-family: ${tokens.sans};
     --kinde-base-font-size: 14px;
-    --kinde-base-text-color: ${tokens.ink};
+    --kinde-base-color: ${tokens.ink};
     --kinde-base-background-color: transparent;
 
-    /* Inputs */
-    --kinde-control-text-background-color: ${tokens.surface3};
-    --kinde-control-text-color: ${tokens.ink};
-    --kinde-control-text-border-color: ${tokens.line};
-    --kinde-control-text-border-width: 1px;
-    --kinde-control-text-border-radius: ${tokens.rMd};
-    --kinde-control-text-padding-block: 13px;
-    --kinde-control-text-padding-inline: 14px;
-    --kinde-control-text-font-family: ${tokens.mono};
-    --kinde-control-text-font-size: 14px;
-    --kinde-control-text-focus-border-color: ${tokens.lineAccent};
-    --kinde-control-text-focus-box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08);
-
-    /* Labels */
-    --kinde-control-label-color: ${tokens.inkMute};
-    --kinde-control-label-font-family: ${tokens.mono};
-    --kinde-control-label-font-size: 10.5px;
-    --kinde-control-label-font-weight: 500;
-    --kinde-control-label-text-transform: uppercase;
-    --kinde-control-label-letter-spacing: 0.06em;
-
-    /* Checkable controls (checkboxes / radios) */
-    --kinde-control-checkable-border-color: ${tokens.lineStrong};
-    --kinde-control-checkable-border-radius: 4px;
-    --kinde-control-checkable-border-width: 1px;
-    --kinde-control-checkable-background-color: ${tokens.surface3};
-    --kinde-control-checkable-checked-background-color: ${tokens.gold};
-    --kinde-control-checkable-checked-border-color: ${tokens.goldSoft};
-
-    /* Primary button — the gold continue button */
+    /* Primary button (gold "Continue") */
     --kinde-button-primary-background-color: ${tokens.gold};
     --kinde-button-primary-color: #0a0a0a;
-    --kinde-button-primary-border-color: ${tokens.goldSoft};
     --kinde-button-primary-border-width: 1px;
-    --kinde-button-primary-border-radius: ${tokens.rMd};
-    --kinde-button-primary-font-family: ${tokens.sans};
-    --kinde-button-primary-font-weight: 600;
-    --kinde-button-primary-font-size: 14px;
-    --kinde-button-primary-padding-block: 13px;
-    --kinde-button-primary-padding-inline: 22px;
-    --kinde-button-primary-hover-background-color: ${tokens.gold};
-    --kinde-button-primary-hover-color: #0a0a0a;
+    --kinde-button-font-size: 14px;
+    --kinde-button-inline-size-is-content-width: false;
 
-    /* Secondary button — outline */
-    --kinde-button-secondary-background-color: transparent;
-    --kinde-button-secondary-color: ${tokens.inkSoft};
-    --kinde-button-secondary-border-color: ${tokens.line};
-    --kinde-button-secondary-border-width: 1px;
-    --kinde-button-secondary-border-style: solid;
-    --kinde-button-secondary-border-radius: ${tokens.rMd};
-    --kinde-button-secondary-hover-border-color: ${tokens.lineStrong};
-    --kinde-button-secondary-hover-color: ${tokens.ink};
+    /* Secondary / uncontained — social provider buttons */
+    --kinde-button-secondary-background-color: ${tokens.surface3};
+    --kinde-button-uncontained-background-color: ${tokens.surface3};
 
-    /* Generic button radius (covers social/OAuth buttons too) */
-    --kinde-button-border-radius: ${tokens.rMd};
+    /* Form field label spacing */
+    --kinde-control-label-spacing: 8px;
 
-    /* Form spacing */
-    --kinde-form-spacing-content: 1rem;
+    /* Validation */
+    --kinde-shared-color-invalid: ${tokens.red};
 
-    /* Links */
-    --kinde-link-color: ${tokens.gold};
-    --kinde-link-hover-color: ${tokens.goldSoft};
+    /* Text links */
+    --kinde-text-link-color: ${tokens.gold};
+    --kinde-text-link-color-hover: ${tokens.goldSoft};
+    --kinde-text-link-color-active: ${tokens.goldSoft};
+    --kinde-text-link-color-focus: ${tokens.goldSoft};
+    --kinde-text-link-color-visited: ${tokens.gold};
 
-    /* Error state */
-    --kinde-error-color: ${tokens.red};
+    /* Disabled */
+    --kinde-shared-color-disabled-background: ${tokens.surface2};
+    --kinde-shared-color-disabled-text: ${tokens.inkMute};
   }
 
   /* ── Document basics ──────────────────────────────────────────── */
@@ -195,55 +160,12 @@ export const getStyles = (): string => `
     padding: 24px;
   }
 
-  /* ── Header ───────────────────────────────────────────────────── */
+  /* Header is intentionally empty — keep its size for visual rhythm */
   .auth-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    height: 64px;
     padding: 22px 28px;
     position: relative;
     z-index: 2;
-  }
-  .auth-header .brand-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: ${tokens.ink};
-  }
-  .auth-header .brand-mark {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    background: ${tokens.surface2};
-    border: 1px solid ${tokens.line};
-    display: grid;
-    place-items: center;
-    font-family: ${tokens.serif};
-    font-weight: 900;
-    font-size: 22px;
-    line-height: 1;
-    color: ${tokens.gold};
-  }
-  .auth-header .brand-text {
-    font-family: ${tokens.serif};
-    font-size: 17px;
-    color: ${tokens.ink};
-    letter-spacing: -0.005em;
-  }
-  .auth-header .header-action {
-    font-family: ${tokens.mono};
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: ${tokens.inkMute};
-    padding: 8px 14px;
-    border: 1px solid ${tokens.line};
-    border-radius: ${tokens.rPill};
-    transition: color 180ms, border-color 180ms;
-  }
-  .auth-header .header-action:hover {
-    color: ${tokens.gold};
-    border-color: ${tokens.lineAccent};
   }
 
   /* ── Card ─────────────────────────────────────────────────────── */
@@ -329,140 +251,244 @@ export const getStyles = (): string => `
     margin-bottom: 24px;
   }
 
-  /* ── Kinde widget overrides ───────────────────────────────────── */
-  /* Most styling is driven by --kinde-* variables above. The selectors
-     below are escape hatches for visual details the variables don't reach. */
-  [data-kinde-root="true"] { color: ${tokens.ink}; }
-
-  [data-kinde-control-label] {
-    font-family: ${tokens.mono};
-    font-size: 10.5px;
-    color: ${tokens.inkMute};
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  [data-kinde-control-text],
-  [data-kinde-control-select-text] {
-    background: ${tokens.surface3};
-    border: 1px solid ${tokens.line};
+  /* ── Kinde widget root ────────────────────────────────────────── */
+  [data-kinde-root="true"] {
     color: ${tokens.ink};
-    font-family: ${tokens.mono};
+    display: block;
   }
-  [data-kinde-control-text]::placeholder {
-    font-family: ${tokens.sans};
-    color: ${tokens.inkMute};
+
+  /* ── Form fields (inputs) ─────────────────────────────────────── */
+  /* Labels */
+  [data-kinde-control-label],
+  label[data-kinde-control-label] {
+    font-family: ${tokens.mono} !important;
+    font-size: 10.5px !important;
+    color: ${tokens.inkMute} !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+    display: block !important;
+  }
+
+  /* Text/email/password inputs (covering Kinde's various selector forms) */
+  [data-kinde-form-field] input,
+  [data-kinde-form-field-variant] input,
+  [data-kinde-control-select-text],
+  [data-kinde-control-text],
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"] {
+    background: ${tokens.surface3} !important;
+    border: 1px solid ${tokens.line} !important;
+    color: ${tokens.ink} !important;
+    font-family: ${tokens.mono} !important;
+    font-size: 14px !important;
+    border-radius: ${tokens.rMd} !important;
+    padding: 13px 14px !important;
+    transition: border-color 180ms, box-shadow 180ms;
+  }
+  [data-kinde-form-field] input::placeholder,
+  input::placeholder {
+    font-family: ${tokens.sans} !important;
+    color: ${tokens.inkMute} !important;
     opacity: 0.7;
   }
-  [data-kinde-control-text]:hover:not(:focus) {
-    border-color: ${tokens.lineStrong};
+  [data-kinde-form-field] input:hover:not(:focus),
+  input[type="text"]:hover:not(:focus),
+  input[type="email"]:hover:not(:focus),
+  input[type="password"]:hover:not(:focus) {
+    border-color: ${tokens.lineStrong} !important;
   }
-  [data-kinde-control-text]:focus {
-    border-color: ${tokens.lineAccent};
-    box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08);
+  [data-kinde-form-field] input:focus,
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    border-color: ${tokens.lineAccent} !important;
+    box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08) !important;
+    outline: none;
   }
-  [data-kinde-control-text][aria-invalid="true"] {
-    border-color: hsla(0, 80%, 70%, 0.45);
-    box-shadow: 0 0 0 3px hsla(0, 80%, 70%, 0.06);
+  [data-kinde-form-field] input[aria-invalid="true"],
+  input[aria-invalid="true"] {
+    border-color: hsla(0, 80%, 70%, 0.45) !important;
+    box-shadow: 0 0 0 3px hsla(0, 80%, 70%, 0.06) !important;
   }
 
-  /* Built-with-Kinde branding — keep it but tone it down */
-  [data-kinde-built-with] {
-    opacity: 0.5;
-    font-family: ${tokens.mono};
-    font-size: 10px;
-    letter-spacing: 0.06em;
+  /* Spacing between form fields and between field and submit button.
+     Kinde's form is a vertical stack — apply margin to every form field
+     wrapper so there's air between the email input and the gold button. */
+  [data-kinde-form-field],
+  [data-kinde-form-field-variant] {
+    display: block !important;
+    margin-bottom: 18px !important;
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────── */
+  /* Primary submit button — gold, with strong hover that doesn't fade.
+     !important is needed because Kinde generates inline hover styles that
+     reduce opacity / shift background on hover, which fights the variable. */
+  [data-kinde-button][data-kinde-button-variant="primary"],
+  button[type="submit"][data-kinde-button],
+  button[type="submit"] {
+    background: ${tokens.gold} !important;
+    color: #0a0a0a !important;
+    border: 1px solid ${tokens.goldSoft} !important;
+    border-radius: ${tokens.rMd} !important;
+    font-family: ${tokens.sans} !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.005em !important;
+    padding: 13px 22px !important;
+    cursor: pointer;
+    transition: opacity 180ms, transform 120ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 200ms !important;
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.2) inset !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+  }
+  [data-kinde-button][data-kinde-button-variant="primary"]:hover,
+  button[type="submit"][data-kinde-button]:hover,
+  button[type="submit"]:hover {
+    background: ${tokens.gold} !important;
+    color: #0a0a0a !important;
+    border-color: ${tokens.goldSoft} !important;
+    opacity: 0.94 !important;
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
+      0 0 32px hsla(40, 60%, 56%, 0.22) !important;
+  }
+  [data-kinde-button][data-kinde-button-variant="primary"]:active,
+  button[type="submit"]:active {
+    transform: scale(0.985) !important;
+  }
+  [data-kinde-button][data-kinde-button-variant="primary"]:focus-visible,
+  button[type="submit"]:focus-visible {
+    outline: 2px solid ${tokens.goldSoft} !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Social / OAuth provider buttons. Kinde renders these as either the
+     "secondary" or "uncontained" variant; cover both. Override Kinde's
+     default light hover so they stay on-theme. */
+  [data-kinde-button][data-kinde-button-variant="secondary"],
+  [data-kinde-button][data-kinde-button-variant="uncontained"],
+  [data-kinde-button][data-kinde-button-variant="social"] {
+    background: ${tokens.surface3} !important;
+    color: ${tokens.ink} !important;
+    border: 1px solid ${tokens.line} !important;
+    border-radius: ${tokens.rMd} !important;
+    font-family: ${tokens.sans} !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 11px 14px !important;
+    cursor: pointer;
+    transition: background 150ms, border-color 150ms !important;
+    width: 100% !important;
+  }
+  [data-kinde-button][data-kinde-button-variant="secondary"]:hover,
+  [data-kinde-button][data-kinde-button-variant="uncontained"]:hover,
+  [data-kinde-button][data-kinde-button-variant="social"]:hover {
+    background: ${tokens.surfaceHi} !important;
+    color: ${tokens.ink} !important;
+    border-color: ${tokens.lineStrong} !important;
   }
 
   /* Divider ("OR") between social and form */
-  [data-kinde-divider] {
-    color: ${tokens.inkMute};
-    font-family: ${tokens.mono};
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  [data-kinde-divider],
+  [data-kinde-separator] {
+    color: ${tokens.inkMute} !important;
+    font-family: ${tokens.mono} !important;
+    font-size: 10px !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    margin: 12px 0 !important;
+  }
+
+  /* ── Form-level spacing ──────────────────────────────────────── */
+  /* Generous top margin on the "fallback action" area (where Kinde renders
+     "No account? Create one") and on the built-with footer so they don't
+     crowd the submit button. */
+  [data-kinde-fallback-action],
+  [data-kinde-text-link]:not([data-kinde-form-field] [data-kinde-text-link]) {
+    font-family: ${tokens.mono} !important;
+    font-size: 11px !important;
+    letter-spacing: 0.04em !important;
+    color: ${tokens.inkMute} !important;
+  }
+
+  /* "No account? Create one" / "Already have an account?" — the row that
+     sits between the submit button and "Powered by Kinde". Kinde marks
+     this area with data-kinde-fallback-action; if a different attribute
+     is used, the generic form > *:not(button) margin below catches it. */
+  [data-kinde-fallback-action] {
+    margin-top: 22px !important;
+    text-align: center;
+  }
+  [data-kinde-fallback-action] a,
+  [data-kinde-fallback-action] [data-kinde-text-link] {
+    color: ${tokens.gold} !important;
+    margin-left: 4px;
+  }
+  [data-kinde-fallback-action] a:hover,
+  [data-kinde-fallback-action] [data-kinde-text-link]:hover {
+    color: ${tokens.goldSoft} !important;
+  }
+
+  /* Powered by Kinde — separated from the fallback action above it. */
+  [data-kinde-built-with],
+  [data-kinde-powered-by] {
+    margin-top: 18px !important;
+    opacity: 0.5;
+    font-family: ${tokens.mono} !important;
+    font-size: 10px !important;
+    letter-spacing: 0.06em !important;
+    text-align: center;
+    display: block;
+  }
+
+  /* Belt-and-braces: if Kinde wraps the submit button in a footer/group
+     element, ensure breathing room around it. */
+  [data-kinde-form-footer],
+  [data-kinde-actions] {
+    margin-top: 18px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
   /* OTP / verification code input */
   [data-kinde-control-otp] input {
-    background: ${tokens.surface3};
-    border: 1px solid ${tokens.line};
-    color: ${tokens.ink};
-    font-family: ${tokens.mono};
-    font-size: 18px;
-    letter-spacing: 0.2em;
-    text-align: center;
-    border-radius: ${tokens.rMd};
+    background: ${tokens.surface3} !important;
+    border: 1px solid ${tokens.line} !important;
+    color: ${tokens.ink} !important;
+    font-family: ${tokens.mono} !important;
+    font-size: 18px !important;
+    letter-spacing: 0.2em !important;
+    text-align: center !important;
+    border-radius: ${tokens.rMd} !important;
   }
   [data-kinde-control-otp] input:focus {
-    border-color: ${tokens.lineAccent};
-    box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08);
+    border-color: ${tokens.lineAccent} !important;
+    box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08) !important;
     outline: none;
-  }
-
-  /* Primary button — gold glow on hover */
-  [data-kinde-button][data-kinde-button-variant="primary"]:hover,
-  button[type="submit"]:hover {
-    box-shadow:
-      0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
-      0 0 32px hsla(40, 60%, 56%, 0.22);
   }
 
   /* Error / hint messages */
   [data-kinde-error],
-  [data-kinde-hint] {
-    font-family: ${tokens.mono};
-    font-size: 11px;
-    letter-spacing: 0.02em;
-    margin-top: 6px;
+  [data-kinde-hint],
+  [data-kinde-control-associated-text] {
+    font-family: ${tokens.mono} !important;
+    font-size: 11px !important;
+    letter-spacing: 0.02em !important;
+    margin-top: 6px !important;
   }
-  [data-kinde-error] { color: ${tokens.red}; }
-  [data-kinde-hint] { color: ${tokens.inkMute}; }
+  [data-kinde-error],
+  [data-kinde-control-associated-text][data-kinde-control-associated-text-variant="invalid"] {
+    color: ${tokens.red} !important;
+  }
+  [data-kinde-hint] { color: ${tokens.inkMute} !important; }
 
-  /* ── Card footer (switch flow link) ──────────────────────────── */
-  .auth-card .card-footer {
-    border-top: 1px solid ${tokens.line};
-    margin-top: 20px;
-    padding-top: 16px;
-    text-align: center;
-    font-family: ${tokens.mono};
-    font-size: 11px;
-    color: ${tokens.inkMute};
-    letter-spacing: 0.04em;
-  }
-  .auth-card .card-footer a {
-    color: ${tokens.gold};
-    border-bottom: 1px solid rgba(212, 168, 83, 0.35);
-    padding-bottom: 1px;
-    margin-left: 6px;
-    transition: color 200ms, border-color 200ms;
-  }
-  .auth-card .card-footer a:hover {
-    color: ${tokens.goldSoft};
-    border-bottom-color: rgba(212, 168, 83, 0.7);
-  }
-
-  /* ── Consent line (below the card form) ──────────────────────── */
-  .consent-line {
-    margin-top: 18px;
-    font-family: ${tokens.mono};
-    font-size: 9.5px;
-    color: ${tokens.inkMute};
-    opacity: 0.65;
-    text-align: center;
-    letter-spacing: 0.04em;
-    line-height: 1.65;
-  }
-  .consent-line a {
-    color: ${tokens.inkMute};
-    text-decoration: underline;
-    text-decoration-color: rgba(110, 106, 100, 0.4);
-    text-underline-offset: 2px;
-  }
-  .consent-line a:hover { color: ${tokens.gold}; }
-
-  /* ── Footer ───────────────────────────────────────────────────── */
+  /* ── Auth footer (outside the card) ───────────────────────────── */
   .auth-footer {
     padding: 26px 28px 22px;
     text-align: center;
@@ -500,11 +526,68 @@ export const getStyles = (): string => `
     opacity: 0.4;
   }
 
+  /* ── Logged-out page ──────────────────────────────────────────── */
+  .logged-out-card { text-align: center; }
+  .logged-out-card .check-mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: ${tokens.goldBg};
+    border: 1px solid ${tokens.lineAccent};
+    display: grid;
+    place-items: center;
+    color: ${tokens.gold};
+    font-family: ${tokens.serif};
+    font-size: 26px;
+    line-height: 1;
+  }
+  .logged-out-card .actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .logged-out-card .actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 22px;
+    border-radius: ${tokens.rMd};
+    font-family: ${tokens.sans};
+    font-size: 14px;
+    font-weight: 600;
+    background: ${tokens.gold};
+    color: #0a0a0a;
+    border: 1px solid ${tokens.goldSoft};
+    box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.2) inset;
+    transition: box-shadow 200ms, opacity 180ms;
+  }
+  .logged-out-card .actions a:hover {
+    opacity: 0.94;
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
+      0 0 32px hsla(40, 60%, 56%, 0.22);
+  }
+  .logged-out-card .actions .secondary {
+    background: transparent;
+    color: ${tokens.inkSoft};
+    border: 1px solid ${tokens.line};
+    font-weight: 500;
+    box-shadow: none;
+  }
+  .logged-out-card .actions .secondary:hover {
+    background: hsla(0, 0%, 100%, 0.02);
+    border-color: ${tokens.lineStrong};
+    color: ${tokens.ink};
+    box-shadow: none;
+  }
+
   /* ── Responsive ──────────────────────────────────────────────── */
   @media (max-width: 480px) {
     .auth-shell main { padding: 16px; }
     .auth-card { padding: 28px 22px 24px; }
     .auth-card h1 { font-size: 24px; }
-    .auth-header { padding: 18px 18px; }
+    .auth-header { padding: 18px 18px; height: 56px; }
   }
 `;

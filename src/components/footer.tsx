@@ -8,12 +8,8 @@ export const Footer = (): React.JSX.Element => {
     <footer className="auth-footer">
       <div className="footer-note">FUTUROS · STRATEGIC FORESIGHT</div>
       <div className="footer-links">
-        <a href="https://futuros.io/privacy" target="_blank" rel="noreferrer">
-          Privacy
-        </a>
-        <span className="sep">·</span>
         <a href="https://futuros.io/terms" target="_blank" rel="noreferrer">
-          Terms
+          Terms &amp; Conditions
         </a>
         <span className="sep">·</span>
         <span>&copy; {year}</span>

@@ -9,7 +9,7 @@ import { Root } from "../../../../root";
 
 const DefaultPage = (event: KindePageEvent): React.JSX.Element => (
   <Root context={event.context} request={event.request}>
-    <DefaultLayout page="default">
+    <DefaultLayout>
       <Widget heading={event.context.widget.content.heading} />
     </DefaultLayout>
   </Root>
