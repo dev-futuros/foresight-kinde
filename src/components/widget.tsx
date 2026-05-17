@@ -7,21 +7,21 @@ type WidgetProps = {
   heading: string;
   eyebrow?: string;
   lede?: string;
+  /** Localised "Strategic Foresight" tagline shown under the wordmark. */
+  brandTag?: string;
 };
 
 export const Widget = ({
   heading,
   eyebrow,
   lede,
+  brandTag = "Strategic Foresight",
 }: WidgetProps): React.JSX.Element => {
   return (
     <section className="auth-card" aria-labelledby="auth-heading">
       <div className="card-brand">
-        <span className="card-brand-mark" aria-hidden="true">F</span>
-        <div>
-          <div className="card-brand-name">Futuros</div>
-          <div className="card-brand-tag">Strategic Foresight</div>
-        </div>
+        <div className="card-brand-name">Futuros</div>
+        <div className="card-brand-tag">{brandTag}</div>
       </div>
 
       {eyebrow && <div className="eyebrow">{eyebrow}</div>}

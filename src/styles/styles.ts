@@ -189,41 +189,26 @@ export const getStyles = (): string => `
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Brand strip inside the card */
+  /* Brand strip inside the card — wordmark only, no F mark. */
   .auth-card .card-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .auth-card .card-brand-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 7px;
-    background: ${tokens.surface3};
-    border: 1px solid ${tokens.line};
-    display: grid;
-    place-items: center;
-    font-family: ${tokens.serif};
-    font-weight: 900;
-    font-size: 22px;
-    line-height: 1;
-    color: ${tokens.gold};
+    display: block;
+    margin-bottom: 22px;
   }
   .auth-card .card-brand-name {
     font-family: ${tokens.serif};
-    font-size: 19px;
+    font-size: 30px;
+    font-weight: 400;
     color: ${tokens.gold};
-    letter-spacing: -0.005em;
-    line-height: 1.15;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
   }
   .auth-card .card-brand-tag {
     font-family: ${tokens.mono};
-    font-size: 9px;
+    font-size: 9.5px;
     color: ${tokens.inkMute};
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    margin-top: 3px;
+    margin-top: 6px;
   }
 
   /* Heading area */
@@ -467,12 +452,12 @@ export const getStyles = (): string => `
     color: ${tokens.goldSoft} !important;
   }
 
-  /* Powered by Kinde — explicitly distanced from "Create one". A subtle
-     dotted line and bigger margin make the visual hierarchy clear. */
+  /* Powered by Kinde — pushed well clear of "Create one" so the two
+     pieces of microcopy don't crowd each other. */
   [data-kinde-built-with],
   [data-kinde-powered-by] {
-    margin-top: 22px !important;
-    padding-top: 14px !important;
+    margin-top: 36px !important;
+    padding-top: 16px !important;
     border-top: 1px dotted ${tokens.line} !important;
     opacity: 0.45;
     font-family: ${tokens.mono} !important;
@@ -615,6 +600,56 @@ export const getStyles = (): string => `
     border-color: ${tokens.lineStrong};
     color: ${tokens.ink};
     box-shadow: none;
+  }
+
+  /* ── Language switcher (fixed bottom-right pill) ──────────────
+     Ported from futuros.io's homepage .lang-toggle so the auth pages
+     feel like a continuation of the marketing site. Each button is an
+     anchor that reloads with a new ?lang=. See components/langSwitcher
+     for the markup and the Catalan-as-Polish hijack rationale. */
+  .lang-toggle {
+    position: fixed;
+    bottom: 1.2rem;
+    right: 1.2rem;
+    z-index: 90;
+    display: flex;
+    gap: 2px;
+    background: ${tokens.surface1};
+    border: 1px solid ${tokens.lineStrong};
+    border-radius: 20px;
+    padding: 4px;
+    font-family: ${tokens.mono};
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    user-select: none;
+  }
+  .lt-btn {
+    padding: 6px 11px;
+    border-radius: 14px;
+    background: none;
+    border: none;
+    color: ${tokens.inkMute};
+    font: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    min-width: 36px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .lt-btn:hover { color: ${tokens.inkSoft}; }
+  .lt-btn.active {
+    color: #0a0a0a;
+    background: ${tokens.gold};
+    font-weight: 500;
+  }
+  @media (max-width: 600px) {
+    .lang-toggle { bottom: 1rem; right: 1rem; padding: 3px; }
   }
 
   /* ── Responsive ──────────────────────────────────────────────── */
