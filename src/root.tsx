@@ -2,6 +2,7 @@
 
 import {
   getKindeCSRF,
+  getKindeNonce,
   getKindeRequiredCSS,
   getKindeRequiredJS,
   getSVGFaviconUrl,
@@ -19,6 +20,18 @@ export const Root = ({
   context,
   request,
 }: RootProps): React.JSX.Element => {
+  // CSP nonce for the inline cookie-sync script. Kinde's CSP requires
+  // every inline <script> to carry a matching nonce attribute; without
+  // it the browser silently refuses to execute the script.
+  // The fonts on Kinde-hosted pages fall back to the OS serif/sans
+  // stacks intentionally — Kinde's style-src CSP does not allow
+  // fonts.googleapis.com, and we'd rather degrade gracefully to system
+  // fonts than serve broken stylesheet requests. If we ever need
+  // Playfair Display / DM Sans / DM Mono on the Kinde pages, we'd have
+  // to self-host the .woff2 files under *.futuros.io (which is in the
+  // allowed style-src list).
+  const nonce = getKindeNonce();
+
   return (
     <html dir={request.locale.isRtl ? "rtl" : "ltr"} lang={request.locale.lang}>
       <head>
@@ -32,21 +45,6 @@ export const Root = ({
         <title>{context.widget.content.page_title}</title>
 
         <link href={getSVGFaviconUrl()} rel="icon" type="image/svg+xml" />
-
-        {/* Preconnect + stylesheet for Playfair Display / DM Sans / DM Mono.
-            Using a <link rel="stylesheet"> instead of an @import inside our
-            inline <style> — link is more reliable across browsers and lets
-            the font stylesheet load in parallel with the page CSS. */}
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link
-          crossOrigin="anonymous"
-          href="https://fonts.gstatic.com"
-          rel="preconnect"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap"
-          rel="stylesheet"
-        />
 
         {getKindeRequiredCSS()}
         {getKindeRequiredJS()}
@@ -63,8 +61,11 @@ export const Root = ({
             LangSwitcher carries back to the React app (dev/app.futuros.io)
             after auth completes.
             'pl' from URL → 'ca' in cookie (we hijack Kinde's Polish slot
-            to host Catalan content; the cookie stores the real language). */}
+            to host Catalan content; the cookie stores the real language).
+            The nonce attribute satisfies Kinde's script-src 'strict-dynamic'
+            CSP — without it the browser refuses to execute the script. */}
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){var p=new URLSearchParams(location.search);var l=p.get('lang');if(!l)return;var v=l==='pl'?'ca':l;document.cookie='futuros_lang='+v+'; Domain=.futuros.io; Path=/; Max-Age=31536000; SameSite=Lax; Secure';})();`,
           }}
