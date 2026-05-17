@@ -1,0 +1,17 @@
+{
+  "name": "futuros-kinde-ui",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Custom Kinde-hosted auth pages styled to match Futuros (Foresight).",
+  "type": "module",
+  "dependencies": {
+    "@kinde/infrastructure": "^0.2.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.6.0"
+  }
+}
