@@ -602,56 +602,6 @@ export const getStyles = (): string => `
     box-shadow: none;
   }
 
-  /* ── Language switcher (fixed bottom-right pill) ──────────────
-     Ported from futuros.io's homepage .lang-toggle so the auth pages
-     feel like a continuation of the marketing site. Each button is an
-     anchor that reloads with a new ?lang=. See components/langSwitcher
-     for the markup and the Catalan-as-Polish hijack rationale. */
-  .lang-toggle {
-    position: fixed;
-    bottom: 1.2rem;
-    right: 1.2rem;
-    z-index: 90;
-    display: flex;
-    gap: 2px;
-    background: ${tokens.surface1};
-    border: 1px solid ${tokens.lineStrong};
-    border-radius: 20px;
-    padding: 4px;
-    font-family: ${tokens.mono};
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-    user-select: none;
-  }
-  .lt-btn {
-    padding: 6px 11px;
-    border-radius: 14px;
-    background: none;
-    border: none;
-    color: ${tokens.inkMute};
-    font: inherit;
-    letter-spacing: inherit;
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-    min-width: 36px;
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-  }
-  .lt-btn:hover { color: ${tokens.inkSoft}; }
-  .lt-btn.active {
-    color: #0a0a0a;
-    background: ${tokens.gold};
-    font-weight: 500;
-  }
-  @media (max-width: 600px) {
-    .lang-toggle { bottom: 1rem; right: 1rem; padding: 3px; }
-  }
-
   /* ── Responsive ──────────────────────────────────────────────── */
   @media (max-width: 480px) {
     .auth-shell main { padding: 16px; }
