@@ -57,6 +57,18 @@ export const Root = ({
         <div className="atmosphere" aria-hidden="true" />
         <div className="grid-overlay" aria-hidden="true" />
         <div data-kinde-root="true">{children}</div>
+        {/* Cookie sync — when the user lands on a Kinde-hosted page with
+            ?lang=, write the corresponding language to futuros_lang on
+            .futuros.io. This way a language change made via the in-page
+            LangSwitcher carries back to the React app (dev/app.futuros.io)
+            after auth completes.
+            'pl' from URL → 'ca' in cookie (we hijack Kinde's Polish slot
+            to host Catalan content; the cookie stores the real language). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var p=new URLSearchParams(location.search);var l=p.get('lang');if(!l)return;var v=l==='pl'?'ca':l;document.cookie='futuros_lang='+v+'; Domain=.futuros.io; Path=/; Max-Age=31536000; SameSite=Lax; Secure';})();`,
+          }}
+        />
       </body>
     </html>
   );
