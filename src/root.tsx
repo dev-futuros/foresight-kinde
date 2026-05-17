@@ -55,19 +55,31 @@ export const Root = ({
         <div className="atmosphere" aria-hidden="true" />
         <div className="grid-overlay" aria-hidden="true" />
         <div data-kinde-root="true">{children}</div>
-        {/* Cookie sync — when the user lands on a Kinde-hosted page with
-            ?lang=, write the corresponding language to futuros_lang on
-            .futuros.io. This way a language change made via the in-page
-            LangSwitcher carries back to the React app (dev/app.futuros.io)
-            after auth completes.
-            'pl' from URL → 'ca' in cookie (we hijack Kinde's Polish slot
-            to host Catalan content; the cookie stores the real language).
-            The nonce attribute satisfies Kinde's script-src 'strict-dynamic'
-            CSP — without it the browser refuses to execute the script. */}
+        {/* Two concerns in one inline script (nonced to satisfy Kinde's
+            script-src 'strict-dynamic' CSP):
+
+            1. Cookie sync — write `futuros_lang` (scoped to .futuros.io)
+               from the current `?lang=` so the React app and homepage
+               can pick the language up on subsequent navigations. The
+               `pl → ca` map reflects the Catalan-as-Polish hijack
+               (Kinde doesn't support `ca`, we fill its Polish slot
+               with Catalan strings).
+
+            2. LangSwitcher click handler — Kinde's "Roast" framework
+               (response content-type: roast/mixed) intercepts <a> clicks
+               and turns them into XHR partial-render requests. Language
+               switching is NOT a partial-renderable concept (the new
+               language affects <html lang>, every widget label, every
+               server-resolved string), so Roast's partial response gets
+               applied but visually nothing changes. We capture-phase
+               intercept the click, prevent default + stop propagation
+               (so Roast never sees it), and force a full navigation via
+               window.location.assign — which the server then renders
+               in the new language top to bottom. */}
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{
-            __html: `(function(){var p=new URLSearchParams(location.search);var l=p.get('lang');if(!l)return;var v=l==='pl'?'ca':l;document.cookie='futuros_lang='+v+'; Domain=.futuros.io; Path=/; Max-Age=31536000; SameSite=Lax; Secure';})();`,
+            __html: `(function(){var p=new URLSearchParams(location.search);var l=p.get('lang');if(l){var v=l==='pl'?'ca':l;document.cookie='futuros_lang='+v+'; Domain=.futuros.io; Path=/; Max-Age=31536000; SameSite=Lax; Secure';}document.querySelectorAll('.lt-btn[data-url-lang]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();var q=new URLSearchParams(location.search);q.set('lang',a.getAttribute('data-url-lang'));window.location.assign(location.pathname+'?'+q.toString());},true);});})();`,
           }}
         />
       </body>
