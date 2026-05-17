@@ -174,10 +174,10 @@ export const getStyles = (): string => `
     z-index: 1;
     background: linear-gradient(180deg, ${tokens.surface1}, ${tokens.surface2});
     border: 1px solid ${tokens.line};
-    border-radius: 18px;
+    border-radius: 16px;
     width: 100%;
-    max-width: 440px;
-    padding: 36px 36px 32px;
+    max-width: 420px;
+    padding: 28px 28px 22px;
     box-shadow:
       0 1px 0 hsla(0, 0%, 100%, 0.04) inset,
       0 24px 48px -16px rgba(0, 0, 0, 0.5),
@@ -193,62 +193,62 @@ export const getStyles = (): string => `
   .auth-card .card-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 28px;
+    gap: 10px;
+    margin-bottom: 20px;
   }
   .auth-card .card-brand-mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
     background: ${tokens.surface3};
     border: 1px solid ${tokens.line};
     display: grid;
     place-items: center;
     font-family: ${tokens.serif};
     font-weight: 900;
-    font-size: 26px;
+    font-size: 22px;
     line-height: 1;
     color: ${tokens.gold};
   }
   .auth-card .card-brand-name {
     font-family: ${tokens.serif};
-    font-size: 22px;
+    font-size: 19px;
     color: ${tokens.gold};
     letter-spacing: -0.005em;
     line-height: 1.15;
   }
   .auth-card .card-brand-tag {
     font-family: ${tokens.mono};
-    font-size: 9.5px;
+    font-size: 9px;
     color: ${tokens.inkMute};
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    margin-top: 4px;
+    margin-top: 3px;
   }
 
   /* Heading area */
   .auth-card .eyebrow {
     font-family: ${tokens.mono};
-    font-size: 10px;
+    font-size: 9.5px;
     color: ${tokens.gold};
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .auth-card h1 {
     font-family: ${tokens.serif};
     font-weight: 400;
-    font-size: 28px;
+    font-size: 24px;
     line-height: 1.15;
     letter-spacing: -0.01em;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: ${tokens.ink};
   }
   .auth-card .lede {
-    font-size: 13.5px;
+    font-size: 13px;
     color: ${tokens.inkSoft};
-    line-height: 1.6;
-    margin-bottom: 24px;
+    line-height: 1.55;
+    margin-bottom: 18px;
   }
 
   /* ── Kinde widget root ────────────────────────────────────────── */
@@ -262,12 +262,12 @@ export const getStyles = (): string => `
   [data-kinde-control-label],
   label[data-kinde-control-label] {
     font-family: ${tokens.mono} !important;
-    font-size: 10.5px !important;
+    font-size: 10px !important;
     color: ${tokens.inkMute} !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
     font-weight: 500 !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
     display: block !important;
   }
 
@@ -284,9 +284,9 @@ export const getStyles = (): string => `
     border: 1px solid ${tokens.line} !important;
     color: ${tokens.ink} !important;
     font-family: ${tokens.mono} !important;
-    font-size: 14px !important;
+    font-size: 13.5px !important;
     border-radius: ${tokens.rMd} !important;
-    padding: 13px 14px !important;
+    padding: 11px 14px !important;
     transition: border-color 180ms, box-shadow 180ms;
   }
   [data-kinde-form-field] input::placeholder,
@@ -315,40 +315,38 @@ export const getStyles = (): string => `
     box-shadow: 0 0 0 3px hsla(0, 80%, 70%, 0.06) !important;
   }
 
-  /* Spacing between form fields and between field and submit button.
-     Kinde's form is a vertical stack — apply margin to every form field
-     wrapper so there's air between the email input and the gold button. */
+  /* Spacing between form fields and between field and submit button. */
   [data-kinde-form-field],
   [data-kinde-form-field-variant] {
     display: block !important;
-    margin-bottom: 18px !important;
+    margin-bottom: 14px !important;
   }
 
   /* ── Buttons ──────────────────────────────────────────────────── */
-  /* Primary submit button — gold, with strong hover that doesn't fade.
-     !important is needed because Kinde generates inline hover styles that
-     reduce opacity / shift background on hover, which fights the variable. */
-  [data-kinde-button][data-kinde-button-variant="primary"],
-  button[type="submit"][data-kinde-button],
-  button[type="submit"] {
+  /* Primary submit button — gold "Continue". Selector intentionally
+     scoped to variant="primary" only; the dropped \`button[type="submit"]\`
+     fallback was over-matching the OAuth provider buttons (which Kinde
+     also renders as submit buttons under their own form), painting them
+     gold. The :has() exclusions below catch the case where Kinde tags
+     social buttons as variant="primary" too — we strip the gold when the
+     button contains a provider icon. */
+  [data-kinde-button][data-kinde-button-variant="primary"]:not(:has(img[alt*="Google" i])):not(:has(img[alt*="LinkedIn" i])):not(:has(img[alt*="Apple" i])):not(:has(img[alt*="Microsoft" i])):not(:has(img[alt*="Facebook" i])):not(:has(img[alt*="GitHub" i])):not(:has(img[src*="google"])):not(:has(img[src*="linkedin"])):not(:has(img[src*="apple"])):not(:has(img[src*="microsoft"])) {
     background: ${tokens.gold} !important;
     color: #0a0a0a !important;
     border: 1px solid ${tokens.goldSoft} !important;
     border-radius: ${tokens.rMd} !important;
     font-family: ${tokens.sans} !important;
     font-weight: 600 !important;
-    font-size: 14px !important;
+    font-size: 13.5px !important;
     letter-spacing: 0.005em !important;
-    padding: 13px 22px !important;
+    padding: 11px 22px !important;
     cursor: pointer;
     transition: opacity 180ms, transform 120ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 200ms !important;
     box-shadow: 0 1px 0 hsla(0, 0%, 100%, 0.2) inset !important;
     width: 100% !important;
     margin-top: 4px !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:hover,
-  button[type="submit"][data-kinde-button]:hover,
-  button[type="submit"]:hover {
+  [data-kinde-button][data-kinde-button-variant="primary"]:not(:has(img[alt*="Google" i])):not(:has(img[alt*="LinkedIn" i])):not(:has(img[alt*="Apple" i])):not(:has(img[alt*="Microsoft" i])):not(:has(img[alt*="Facebook" i])):not(:has(img[alt*="GitHub" i])):hover {
     background: ${tokens.gold} !important;
     color: #0a0a0a !important;
     border-color: ${tokens.goldSoft} !important;
@@ -357,43 +355,91 @@ export const getStyles = (): string => `
       0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
       0 0 32px hsla(40, 60%, 56%, 0.22) !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:active,
-  button[type="submit"]:active {
+  [data-kinde-button][data-kinde-button-variant="primary"]:active {
     transform: scale(0.985) !important;
   }
-  [data-kinde-button][data-kinde-button-variant="primary"]:focus-visible,
-  button[type="submit"]:focus-visible {
+  [data-kinde-button][data-kinde-button-variant="primary"]:focus-visible {
     outline: 2px solid ${tokens.goldSoft} !important;
     outline-offset: 2px !important;
   }
 
-  /* Social / OAuth provider buttons. Kinde renders these as either the
-     "secondary" or "uncontained" variant; cover both. Override Kinde's
-     default light hover so they stay on-theme. */
+  /* ── Social / OAuth provider buttons ──────────────────────────── */
+  /* Match any button that contains a known provider icon. This is the
+     reliable discriminator regardless of which variant Kinde tags them
+     with internally. The whole row sits in a horizontal flex so the
+     buttons appear side-by-side, icon-only — saves vertical space. */
+  [data-kinde-button]:has(img[alt*="Google" i]),
+  [data-kinde-button]:has(img[alt*="LinkedIn" i]),
+  [data-kinde-button]:has(img[alt*="Apple" i]),
+  [data-kinde-button]:has(img[alt*="Microsoft" i]),
+  [data-kinde-button]:has(img[alt*="Facebook" i]),
+  [data-kinde-button]:has(img[alt*="GitHub" i]),
+  [data-kinde-button]:has(img[src*="google"]),
+  [data-kinde-button]:has(img[src*="linkedin"]),
+  [data-kinde-button]:has(img[src*="apple"]),
+  [data-kinde-button]:has(img[src*="microsoft"]),
   [data-kinde-button][data-kinde-button-variant="secondary"],
-  [data-kinde-button][data-kinde-button-variant="uncontained"],
-  [data-kinde-button][data-kinde-button-variant="social"] {
+  [data-kinde-button][data-kinde-button-variant="uncontained"] {
     background: ${tokens.surface3} !important;
     color: ${tokens.ink} !important;
     border: 1px solid ${tokens.line} !important;
     border-radius: ${tokens.rMd} !important;
-    font-family: ${tokens.sans} !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 11px 14px !important;
     cursor: pointer;
     transition: background 150ms, border-color 150ms !important;
-    width: 100% !important;
+    /* icon-only sizing */
+    flex: 1 1 0 !important;
+    width: auto !important;
+    padding: 10px !important;
+    min-height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    /* hide the "Continue with X" text, keep the icon visible */
+    font-size: 0 !important;
+    text-indent: -9999px;
+    overflow: hidden;
   }
+  [data-kinde-button]:has(img[alt*="Google" i]):hover,
+  [data-kinde-button]:has(img[alt*="LinkedIn" i]):hover,
+  [data-kinde-button]:has(img[alt*="Apple" i]):hover,
+  [data-kinde-button]:has(img[alt*="Microsoft" i]):hover,
+  [data-kinde-button]:has(img[alt*="Facebook" i]):hover,
+  [data-kinde-button]:has(img[alt*="GitHub" i]):hover,
   [data-kinde-button][data-kinde-button-variant="secondary"]:hover,
-  [data-kinde-button][data-kinde-button-variant="uncontained"]:hover,
-  [data-kinde-button][data-kinde-button-variant="social"]:hover {
+  [data-kinde-button][data-kinde-button-variant="uncontained"]:hover {
     background: ${tokens.surfaceHi} !important;
     color: ${tokens.ink} !important;
     border-color: ${tokens.lineStrong} !important;
   }
+  /* Restore icon visibility (we killed font-size on the parent) */
+  [data-kinde-button]:has(img) img,
+  [data-kinde-button]:has(img) svg {
+    text-indent: 0 !important;
+    font-size: initial !important;
+    width: 18px !important;
+    height: 18px !important;
+    object-fit: contain !important;
+    flex-shrink: 0 !important;
+  }
 
-  /* Divider ("OR") between social and form */
+  /* Container that holds the OAuth buttons — try several plausible
+     selectors so we catch whichever wrapper Kinde actually uses, and
+     turn it into a horizontal row. */
+  [data-kinde-social-providers],
+  [data-kinde-social-buttons],
+  [data-kinde-buttons-group],
+  [data-kinde-oauth-providers],
+  div:has(> [data-kinde-button]:has(img[alt*="Google" i])):has(> [data-kinde-button]:has(img[alt*="LinkedIn" i])),
+  div:has(> [data-kinde-button][data-kinde-button-variant="secondary"] + [data-kinde-button][data-kinde-button-variant="secondary"]) {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Divider ("OR") between social and form — extra breathing room. */
   [data-kinde-divider],
   [data-kinde-separator] {
     color: ${tokens.inkMute} !important;
@@ -401,13 +447,10 @@ export const getStyles = (): string => `
     font-size: 10px !important;
     letter-spacing: 0.14em !important;
     text-transform: uppercase !important;
-    margin: 12px 0 !important;
+    margin: 18px 0 !important;
   }
 
   /* ── Form-level spacing ──────────────────────────────────────── */
-  /* Generous top margin on the "fallback action" area (where Kinde renders
-     "No account? Create one") and on the built-with footer so they don't
-     crowd the submit button. */
   [data-kinde-fallback-action],
   [data-kinde-text-link]:not([data-kinde-form-field] [data-kinde-text-link]) {
     font-family: ${tokens.mono} !important;
@@ -416,12 +459,10 @@ export const getStyles = (): string => `
     color: ${tokens.inkMute} !important;
   }
 
-  /* "No account? Create one" / "Already have an account?" — the row that
-     sits between the submit button and "Powered by Kinde". Kinde marks
-     this area with data-kinde-fallback-action; if a different attribute
-     is used, the generic form > *:not(button) margin below catches it. */
+  /* "No account? Create one" — sits between submit and Powered by Kinde */
   [data-kinde-fallback-action] {
-    margin-top: 22px !important;
+    margin-top: 20px !important;
+    margin-bottom: 0 !important;
     text-align: center;
   }
   [data-kinde-fallback-action] a,
@@ -434,11 +475,14 @@ export const getStyles = (): string => `
     color: ${tokens.goldSoft} !important;
   }
 
-  /* Powered by Kinde — separated from the fallback action above it. */
+  /* Powered by Kinde — explicitly distanced from "Create one". A subtle
+     dotted line and bigger margin make the visual hierarchy clear. */
   [data-kinde-built-with],
   [data-kinde-powered-by] {
-    margin-top: 18px !important;
-    opacity: 0.5;
+    margin-top: 22px !important;
+    padding-top: 14px !important;
+    border-top: 1px dotted ${tokens.line} !important;
+    opacity: 0.45;
     font-family: ${tokens.mono} !important;
     font-size: 10px !important;
     letter-spacing: 0.06em !important;
@@ -446,14 +490,12 @@ export const getStyles = (): string => `
     display: block;
   }
 
-  /* Belt-and-braces: if Kinde wraps the submit button in a footer/group
-     element, ensure breathing room around it. */
   [data-kinde-form-footer],
   [data-kinde-actions] {
-    margin-top: 18px !important;
+    margin-top: 14px !important;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
 
   /* OTP / verification code input */
