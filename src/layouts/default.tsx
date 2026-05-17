@@ -22,7 +22,7 @@ export const DefaultLayout = ({
   <div className="auth-shell">
     <Header />
     <main>{children}</main>
-    <Footer termsLabel={termsLabel} />
+    <Footer lang={lang} termsLabel={termsLabel} />
     <LangSwitcher activeLang={lang} />
   </div>
 );
