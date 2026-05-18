@@ -797,6 +797,114 @@ export const getStyles = (): string => `
     color: inherit !important;
   }
 
+  /* ── Subscription payment (collect_payment_details) ────────────
+     Shown on the user's NEXT login after they pick a plan during
+     registration (Kinde defers payment collection to session #2).
+     Renders a selected-plan summary card (.kinde-card-is-accent-color)
+     followed by Stripe Elements inside .kinde-stripe-payment-form.
+
+     DOM verified on auth-dev.futuros.io 2026-05-18 on the second
+     login of a fresh test user that picked Pro at signup. */
+
+  /* variant-medium is used both as a section label ("Selected plan",
+     "Credit card details") AND for the plan name "Pro" inside the
+     accent card. Default: render as a small uppercase mono label
+     like variant-x-small. Override below for the in-card case. */
+  .kinde-layout-widget .kinde-heading-variant-medium,
+  .kinde-layout-widget [data-kinde-heading-variant="medium"] {
+    font-family: ${tokens.mono};
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: ${tokens.inkMute};
+    font-weight: 500;
+    margin: 18px 0 8px;
+  }
+
+  /* "Selected plan" summary card. Kinde's default for is-accent-color
+     is a light fill that washes out our dark theme — retheme to a
+     subtle gold-tinted dark surface instead. */
+  .kinde-card-is-accent-color,
+  [data-kinde-card-is-accent-color="true"] {
+    background: ${tokens.goldBg} !important;
+    border: 1px solid ${tokens.lineAccent} !important;
+    border-radius: ${tokens.rMd};
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+
+  /* Plan name inside the accent card — gold serif like the
+     choose_plan plan-name heading, not a label. */
+  .kinde-card-is-accent-color .kinde-heading-variant-medium,
+  [data-kinde-card-is-accent-color="true"] [data-kinde-heading-variant="medium"] {
+    font-family: ${tokens.serif} !important;
+    font-size: 20px !important;
+    color: ${tokens.gold} !important;
+    letter-spacing: -0.01em !important;
+    text-transform: none !important;
+    margin: 0 !important;
+  }
+
+  .kinde-card-is-accent-color .kinde-price {
+    margin: 0;
+  }
+
+  /* Stripe form. The iframe inside handles the card inputs; we just
+     give the wrapper appropriate spacing. */
+  .kinde-stripe-payment-form,
+  [data-kinde-stripe-payment-form="true"] {
+    display: block;
+    margin: 8px 0 0;
+  }
+  .kinde-stripe-payment-form-element,
+  [data-kinde-stripe-payment-form-element="true"] {
+    margin: 12px 0 18px;
+  }
+  .kinde-stripe-payment-form .kinde-button-variant-primary {
+    margin-top: 8px;
+    width: 100% !important;
+  }
+
+  /* Alert banners (Stripe payment errors, noscript warning, etc.). */
+  .kinde-alert-banner,
+  [data-kinde-alert-banner="true"] {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: ${tokens.rMd};
+    border: 1px solid ${tokens.line};
+    background: ${tokens.surface2};
+    margin: 10px 0;
+    align-items: flex-start;
+  }
+  .kinde-alert-banner--variant-error {
+    background: hsla(0, 80%, 70%, 0.06);
+    border-color: hsla(0, 80%, 70%, 0.25);
+  }
+  .kinde-alert-banner-icon,
+  [data-kinde-alert-banner-icon="true"] {
+    flex-shrink: 0;
+    color: ${tokens.red};
+    display: inline-flex;
+    align-items: center;
+    margin-top: 1px;
+  }
+  .kinde-alert-banner-icon .kinde-icon,
+  [data-kinde-alert-banner-icon="true"] [data-kinde-icon="true"] {
+    width: 18px;
+    height: 18px;
+  }
+  .kinde-alert-banner-text,
+  [data-kinde-alert-banner-text="true"] {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: ${tokens.inkSoft};
+  }
+
   /* ── "Powered by Kinde" footer inside the widget ──────────────── */
   .kinde-layout-widget-branding,
   [data-kinde-layout-widget-branding="true"] {
