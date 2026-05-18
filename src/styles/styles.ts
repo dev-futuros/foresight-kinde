@@ -84,27 +84,6 @@ export const getStyles = (): string => `
     /* Disabled */
     --kinde-shared-color-disabled-background: ${tokens.surface2};
     --kinde-shared-color-disabled-text: ${tokens.inkMute};
-
-    /* ── SPECULATIVE: Stripe Elements Appearance hand-off ───────────
-       Kinde's public docs (styling-with-css, style-with-style-hooks)
-       do NOT document any variable that lets us theme the Stripe
-       Elements iframe inside collect_payment_details. Field labels
-       ("Card number" etc.) render with low contrast against our dark
-       theme as a result. These are guesses at undocumented variable
-       names that Kinde MIGHT forward to Stripe's Appearance API. If
-       any take effect, the iframe labels lighten up; if they don't,
-       they're inert. Remove if Kinde confirms nothing of this shape
-       is wired, or replace with the real names if they document them. */
-    --kinde-stripe-color-text: ${tokens.ink};
-    --kinde-stripe-color-text-secondary: ${tokens.inkSoft};
-    --kinde-stripe-color-background: ${tokens.surface3};
-    --kinde-stripe-color-primary: ${tokens.gold};
-    --kinde-stripe-appearance-theme: night;
-    /* Alternate naming patterns in case Kinde uses Stripe's own names: */
-    --stripe-color-text: ${tokens.ink};
-    --stripe-color-text-secondary: ${tokens.inkSoft};
-    --stripe-color-background: ${tokens.surface3};
-    --stripe-color-primary: ${tokens.gold};
   }
 
   /* ── Document basics ──────────────────────────────────────────── */
@@ -681,6 +660,48 @@ export const getStyles = (): string => `
     color: ${tokens.inkSoft};
     line-height: 1.5;
     margin: 0;
+  }
+
+  /* ── Badge slot ────────────────────────────────────────────────
+     Every plan card carries a [data-plan-details-card-placeholder]
+     div BEFORE the plan-name heading. On plans configured with a
+     marketing badge (e.g. "Free trial for 2 days") Kinde injects a
+     .kinde-badge here; on plans without one the div is empty. Give
+     the slot a fixed min-height so all cards in a side-by-side row
+     align: when one plan has a badge and another doesn't, the
+     non-badged plan keeps the same vertical space reserved so its
+     heading / price / CTA line up with the badged plan's. */
+  .kinde-layout-plans [data-plan-details-card-placeholder="true"] {
+    min-height: 26px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  /* The badge itself — small mono uppercase pill in the gold accent
+     palette. Targets both the class and the data-attribute so it works
+     even if Kinde stops emitting one of them. */
+  .kinde-badge,
+  [data-kinde-badge="true"] {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    background: ${tokens.goldBg};
+    border: 1px solid ${tokens.lineAccent};
+    border-radius: ${tokens.rPill};
+    color: ${tokens.gold};
+    font-family: ${tokens.mono};
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .kinde-badge-text,
+  [data-kinde-badge-text="true"] {
+    font-family: inherit;
+    color: inherit;
+    letter-spacing: inherit;
   }
 
   /* ── Kinde "heading" elements ──────────────────────────────────
