@@ -602,11 +602,249 @@ export const getStyles = (): string => `
     box-shadow: none;
   }
 
+  /* ── Billing / plan-selection screens ────────────────────────────
+     The (choose_plan), (collect_payment_details), and
+     (subscription_success) pages render in the same auth flow as
+     register/login (data-kinde-root="true") and so flow through
+     (default)/page.tsx into our .auth-card wrapper. The widget DOM
+     inside the card uses the same kinde-* / data-kinde-* hook
+     namespace as the auth widgets, but with different elements
+     (kinde-layout-plans, kinde-card, kinde-heading, kinde-price, …)
+     none of which our auth styles cover. This block fills the gap.
+
+     DOM verified on auth-dev.futuros.io during a fresh registration
+     flow on 2026-05-18 after enabling pricing-table-in-signup at
+     Settings → Environment → Billing. */
+
+  /* Widen the auth-card when it holds a plans grid. Two plans need
+     ~720px to lay out comfortably side-by-side; the upper bound is
+     viewport-bounded by the existing width:100% / padding on the
+     shell, so this still works on phones (cards just get tighter
+     rather than stacking — D requirement: always side-by-side). */
+  .auth-card:has(.kinde-layout-plans),
+  .auth-card:has([data-kinde-layout-plans="true"]) {
+    max-width: 720px;
+  }
+
+  /* Plans grid. Kinde gives this its own flex/grid by default but
+     we set it explicitly so the side-by-side guarantee doesn't
+     depend on Kinde's CSS. */
+  .kinde-layout-plans,
+  [data-kinde-layout-plans="true"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+    margin-top: 6px !important;
+  }
+
+  /* Per-plan card — Kinde's own .kinde-card, NOT our outer .auth-card. */
+  .kinde-layout-plans .kinde-card,
+  [data-kinde-layout-plans="true"] [data-kinde-card="true"] {
+    background: ${tokens.surface3};
+    border: 1px solid ${tokens.line};
+    border-radius: ${tokens.rMd};
+    padding: 20px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 180ms, box-shadow 180ms;
+  }
+  .kinde-layout-plans .kinde-card:hover,
+  [data-kinde-layout-plans="true"] [data-kinde-card="true"]:hover {
+    border-color: ${tokens.lineStrong};
+  }
+
+  /* Plan description ("- 1 user · 10 reports/month"). */
+  .kinde-layout-plans [data-plan-details-card-description="true"] {
+    font-size: 13px;
+    color: ${tokens.inkSoft};
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ── Kinde "heading" elements ──────────────────────────────────
+     Used for plan names (variant-large), prices (variant-x-large),
+     and the "Features" section label (variant-x-small). Default
+     Kinde leaves color/font unset so they're invisible on our dark
+     surfaces — define every variant explicitly. Scoped to
+     .kinde-layout-widget so it doesn't reach into the auth widget
+     (which uses our own h1 from widget.tsx, styled separately). */
+  .kinde-layout-widget .kinde-heading,
+  .kinde-layout-widget [data-kinde-heading="true"] {
+    color: ${tokens.ink};
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin: 0;
+  }
+  .kinde-layout-widget .kinde-heading-variant-large,
+  .kinde-layout-widget [data-kinde-heading-variant="large"] {
+    font-family: ${tokens.serif};
+    font-size: 22px;
+    color: ${tokens.gold};
+  }
+  .kinde-layout-widget .kinde-heading-variant-x-large,
+  .kinde-layout-widget [data-kinde-heading-variant="x-large"] {
+    font-family: ${tokens.serif};
+    font-size: 30px;
+    color: ${tokens.ink};
+  }
+  .kinde-layout-widget .kinde-heading-variant-x-small,
+  .kinde-layout-widget [data-kinde-heading-variant="x-small"] {
+    font-family: ${tokens.mono};
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: ${tokens.inkMute};
+    font-weight: 500;
+  }
+
+  /* Price block (€99 EUR / month). */
+  .kinde-price,
+  [data-kinde-price="true"] {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+  }
+  .kinde-price-meta,
+  [data-kinde-price-meta="true"] {
+    font-family: ${tokens.mono};
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: ${tokens.inkMute};
+  }
+
+  /* Subtle divider between CTA and features list. */
+  .kinde-card-element-divider,
+  [data-kinde-card-element-divider="true"] {
+    height: 1px;
+    background: ${tokens.line};
+    margin: 4px 0;
+    border: 0;
+  }
+
+  /* Features list. Same check-icon look we already apply to
+     .kinde-icon, but tightened up for in-card use. */
+  .kinde-layout-plans .kinde-list,
+  [data-kinde-layout-plans="true"] [data-kinde-list="true"] {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .kinde-layout-plans li[data-kinde-list-item="true"] {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: ${tokens.inkSoft};
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .kinde-layout-plans li[data-kinde-list-item="true"] svg.kinde-icon,
+  .kinde-layout-plans li[data-kinde-list-item="true"] [data-kinde-icon="true"] {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: ${tokens.gold};
+    margin-top: 3px;
+  }
+
+  /* ── "Choose plan" CTA ─────────────────────────────────────────
+     The plan buttons use .kinde-button-variant-secondary (same as
+     social auth buttons), but distinguished by
+     .kinde-button-is-content-width. Our existing social-button rule
+     hides text (font-size: 0 + text-indent: -9999px) — override that
+     for content-width variants so the "Choose plan" label is
+     visible, and restyle to look like a plan CTA. */
+  .kinde-button-is-content-width.kinde-button-variant-secondary,
+  [data-kinde-button-is-content-width="true"][data-kinde-button-variant="secondary"] {
+    font-size: 13.5px !important;
+    text-indent: 0 !important;
+    width: 100% !important;
+    padding: 11px 16px !important;
+    font-family: ${tokens.sans} !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.005em !important;
+    background: ${tokens.surfaceHi} !important;
+    border: 1px solid ${tokens.lineStrong} !important;
+    border-radius: ${tokens.rMd} !important;
+    color: ${tokens.ink} !important;
+    cursor: pointer;
+    transition: background 160ms, border-color 160ms, color 160ms, box-shadow 200ms !important;
+    overflow: visible !important;
+    text-transform: none !important;
+  }
+  .kinde-button-is-content-width.kinde-button-variant-secondary:hover,
+  [data-kinde-button-is-content-width="true"][data-kinde-button-variant="secondary"]:hover {
+    background: ${tokens.gold} !important;
+    border-color: ${tokens.goldSoft} !important;
+    color: #0a0a0a !important;
+    box-shadow:
+      0 1px 0 hsla(0, 0%, 100%, 0.2) inset,
+      0 0 32px hsla(40, 60%, 56%, 0.18) !important;
+  }
+  /* The text span inherits font-size: 0 from the outer button rule
+     applied to all .kinde-button-variant-secondary. Re-assert
+     inherit so the override above takes effect for plan buttons. */
+  .kinde-button-is-content-width .kinde-button-text,
+  [data-kinde-button-is-content-width="true"] [data-kinde-button-text="true"] {
+    font-size: inherit !important;
+    text-indent: 0 !important;
+    color: inherit !important;
+  }
+
+  /* ── "Powered by Kinde" footer inside the widget ──────────────── */
+  .kinde-layout-widget-branding,
+  [data-kinde-layout-widget-branding="true"] {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px dotted ${tokens.line};
+    text-align: center;
+    opacity: 0.4;
+  }
+  .kinde-layout-widget-branding .kinde-branding {
+    font-family: ${tokens.mono};
+    font-size: 10px;
+    color: ${tokens.inkMute};
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+  }
+  .kinde-layout-widget-branding .kinde-branding figcaption {
+    display: inline;
+  }
+  .kinde-layout-widget-branding a {
+    display: inline-flex;
+    align-items: center;
+    color: ${tokens.inkMute};
+  }
+  .kinde-layout-widget-branding svg {
+    width: 46px;
+    height: auto;
+    color: ${tokens.inkMute};
+  }
+
   /* ── Responsive ──────────────────────────────────────────────── */
   @media (max-width: 480px) {
     .auth-shell main { padding: 16px; }
     .auth-card { padding: 28px 22px 24px; }
     .auth-card h1 { font-size: 24px; }
     .auth-header { padding: 18px 18px; height: 56px; }
+    /* Plan cards stay side-by-side per the requirement, but tighten
+       padding so they fit. If two plans become unreadable at this
+       width we can revisit. */
+    .kinde-layout-plans .kinde-card,
+    [data-kinde-layout-plans="true"] [data-kinde-card="true"] {
+      padding: 14px 12px;
+    }
+    .kinde-layout-plans {
+      gap: 8px !important;
+    }
   }
 `;
