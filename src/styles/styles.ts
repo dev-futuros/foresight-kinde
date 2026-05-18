@@ -84,6 +84,27 @@ export const getStyles = (): string => `
     /* Disabled */
     --kinde-shared-color-disabled-background: ${tokens.surface2};
     --kinde-shared-color-disabled-text: ${tokens.inkMute};
+
+    /* ── SPECULATIVE: Stripe Elements Appearance hand-off ───────────
+       Kinde's public docs (styling-with-css, style-with-style-hooks)
+       do NOT document any variable that lets us theme the Stripe
+       Elements iframe inside collect_payment_details. Field labels
+       ("Card number" etc.) render with low contrast against our dark
+       theme as a result. These are guesses at undocumented variable
+       names that Kinde MIGHT forward to Stripe's Appearance API. If
+       any take effect, the iframe labels lighten up; if they don't,
+       they're inert. Remove if Kinde confirms nothing of this shape
+       is wired, or replace with the real names if they document them. */
+    --kinde-stripe-color-text: ${tokens.ink};
+    --kinde-stripe-color-text-secondary: ${tokens.inkSoft};
+    --kinde-stripe-color-background: ${tokens.surface3};
+    --kinde-stripe-color-primary: ${tokens.gold};
+    --kinde-stripe-appearance-theme: night;
+    /* Alternate naming patterns in case Kinde uses Stripe's own names: */
+    --stripe-color-text: ${tokens.ink};
+    --stripe-color-text-secondary: ${tokens.inkSoft};
+    --stripe-color-background: ${tokens.surface3};
+    --stripe-color-primary: ${tokens.gold};
   }
 
   /* ── Document basics ──────────────────────────────────────────── */
