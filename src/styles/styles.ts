@@ -975,6 +975,64 @@ export const getStyles = (): string => `
     margin-top: 18px !important;
   }
 
+  /* ── Subscription success ────────────────────────────────────────
+     Renders right after Stripe confirms payment — the user lands on
+     a near-empty page with just an h1 ("Your subscription to the
+     Pro plan is active!") and a single Continue button that posts
+     back to Kinde to finish the flow and return to the app.
+
+     The default Kinde rendering of this page felt thin: h1 flush
+     against the top of the card, a single Continue button right
+     under it, no acknowledgement that something celebratory just
+     happened. The form has name="acknowledge_subscription" which
+     we use as the scoping hook so this styling can't bleed into
+     any other widget that happens to share .auth-card. */
+
+  /* Centre everything inside the card (default is left-aligned). */
+  .auth-card:has(form[name="acknowledge_subscription"]) {
+    text-align: center;
+  }
+  .auth-card:has(form[name="acknowledge_subscription"]) h1 {
+    margin: 6px 0 18px;
+  }
+
+  /* Gold check-mark medallion above the heading. Reuses the same
+     visual language as .logged-out-card .check-mark (gold ring on a
+     gold-tinted disc) so the success states across the auth flow
+     feel like one family. Rendered via ::before on the form so we
+     don't need Kinde to inject any extra DOM. */
+  .auth-card:has(form[name="acknowledge_subscription"])::before {
+    content: "✓";
+    width: 56px;
+    height: 56px;
+    margin: 4px auto 18px;
+    border-radius: 50%;
+    background: ${tokens.goldBg};
+    border: 1px solid ${tokens.lineAccent};
+    display: grid;
+    place-items: center;
+    color: ${tokens.gold};
+    font-family: ${tokens.serif};
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  /* Continue button — narrow it so it doesn't span the full card
+     width (which made the page look bottom-heavy and form-like
+     rather than celebratory). Centred via auto margins inside the
+     centred form. */
+  .auth-card:has(form[name="acknowledge_subscription"]) form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .auth-card:has(form[name="acknowledge_subscription"])
+    .kinde-button-variant-primary {
+    min-width: 200px;
+    margin-top: 8px !important;
+  }
+
   /* Alert banners (Stripe payment errors, noscript warning, etc.). */
   .kinde-alert-banner,
   [data-kinde-alert-banner="true"] {
