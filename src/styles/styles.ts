@@ -862,30 +862,71 @@ export const getStyles = (): string => `
   }
 
   /* ── Subscription payment (collect_payment_details) ────────────
-     Intentionally NOT customized. The Stripe Payment Element renders
-     its card-number / expiry / CVC / country fields and the Link
-     "Save my information" opt-in inside a Stripe-controlled iframe
-     for PCI compliance. CSS from this stylesheet doesn't cross the
-     iframe boundary — we can't reach .p-FieldLabel / .p-Input / etc.
-     Stripe defaults to a light theme, and Kinde's Custom UI doesn't
-     expose any hook to pass through an appearance config to
-     Stripe.js (confirmed against docs at
+     The Stripe Payment Element renders its card-number / expiry /
+     CVC / country fields and the Link "Save my information" opt-in
+     inside a Stripe-controlled iframe for PCI compliance. CSS from
+     this stylesheet doesn't cross the iframe boundary — we can't
+     reach .p-FieldLabel / .p-Input / etc. Stripe defaults to a
+     LIGHT theme inside the iframe, and Kinde's Custom UI exposes
+     no hook to pass through an appearance config to Stripe.js
+     (confirmed against docs at
      docs.kinde.com/design/customize-with-code/styling-with-css/).
 
-     Earlier we styled the surrounding wrapper (the "Selected plan"
-     accent card, the section headings) in our dark gold theme. That
-     made the visual mismatch worse: a dark-themed card with a
-     light-themed Stripe iframe glued to the bottom looks broken
-     rather than intentional. Removing those overrides lets the
-     whole payment screen fall back to Kinde's default styling, which
-     is light-mode and harmonises with Stripe's default light
-     appearance.
+     Painting the surrounding chrome dark left a half-and-half page:
+     light Stripe iframe glued to a dark-themed wrapper, plus the
+     selected-plan accent pill defaulting to Kinde's light pill on
+     our dark card. Both readability (dark text on dark body where
+     Stripe's transparent iframe lets the body show through) and
+     visual coherence broke.
 
-     If Kinde ever ships a Stripe appearance pass-through (or
-     someone documents --kinde-stripe-* CSS variables that DO
-     forward to Stripe.js), revisit and re-theme the whole flow
-     consistently in dark mode. Until then the payment screen
-     deliberately doesn't match the rest of the auth UI. */
+     Pragmatic fix: opt this single page out of our entire dark
+     theme. Scope with :has(.kinde-stripe-payment-form) on body so
+     login / signup / choose_plan / subscription_success stay dark
+     unchanged. The rules below hide the atmospherics, flip the body
+     and auth-card to white, and let text fall to a near-black so
+     the Stripe iframe's light defaults read coherently with their
+     surroundings. The Futuros wordmark stays gold (works on white)
+     and the gold Continue button stays gold (also fine on white).
+
+     Revisit if Kinde ever ships a Stripe appearance pass-through:
+     at that point flip everything BACK to dark and re-theme the
+     iframe to match. */
+  body:has(.kinde-stripe-payment-form) {
+    background: #ffffff !important;
+    color: #18181b !important;
+  }
+  body:has(.kinde-stripe-payment-form) .atmosphere,
+  body:has(.kinde-stripe-payment-form) .grid-overlay {
+    display: none !important;
+  }
+  body:has(.kinde-stripe-payment-form) .auth-card {
+    background: #ffffff !important;
+    border: 1px solid #e4e4e7 !important;
+    color: #18181b !important;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.05),
+      0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  }
+  body:has(.kinde-stripe-payment-form) .auth-card h1,
+  body:has(.kinde-stripe-payment-form) .auth-card h2,
+  body:has(.kinde-stripe-payment-form) .auth-card h3 {
+    color: #18181b !important;
+  }
+  /* Card-level brand chip — wordmark stays gold (legible on white);
+     tagline drops to a neutral grey. */
+  body:has(.kinde-stripe-payment-form) .card-brand-tag {
+    color: #71717a !important;
+  }
+  /* Footer note + privacy links — soft grey on white. */
+  body:has(.kinde-stripe-payment-form) .auth-footer .footer-note,
+  body:has(.kinde-stripe-payment-form) .auth-footer .footer-links,
+  body:has(.kinde-stripe-payment-form) .auth-footer .footer-links a {
+    color: #71717a !important;
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+  }
+  body:has(.kinde-stripe-payment-form) .auth-footer .footer-links a:hover {
+    color: ${tokens.gold} !important;
+  }
 
   /* Alert banners (Stripe payment errors, noscript warning, etc.). */
   .kinde-alert-banner,
