@@ -892,7 +892,11 @@ export const getStyles = (): string => `
      at that point flip everything BACK to dark and re-theme the
      iframe to match. */
   body:has(.kinde-stripe-payment-form) {
-    background: #ffffff !important;
+    /* Just-off-white page background (zinc-100) — pure white was
+       harsh against the surrounding screen brightness, this tones
+       it down enough to be comfortable while still letting the
+       pure-white card pop with its own subtle separation. */
+    background: #f4f4f5 !important;
     color: #18181b !important;
   }
   body:has(.kinde-stripe-payment-form) .atmosphere,
