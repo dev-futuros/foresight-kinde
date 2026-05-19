@@ -916,8 +916,11 @@ export const getStyles = (): string => `
     margin: 0;
   }
 
-  /* Stripe form. The iframe inside handles the card inputs; we just
-     give the wrapper appropriate spacing. */
+  /* Stripe Payment Element — wrapper. Stripe renders its internals
+     INLINE here (not in an iframe), so the .p-* classes below are
+     reachable from our CSS. Stripe's default appearance is light-
+     mode (dark text on white inputs) which is unreadable on our
+     dark Kinde card. Restyle every part. */
   .kinde-stripe-payment-form,
   [data-kinde-stripe-payment-form="true"] {
     display: block;
@@ -930,6 +933,174 @@ export const getStyles = (): string => `
   .kinde-stripe-payment-form .kinde-button-variant-primary {
     margin-top: 8px;
     width: 100% !important;
+  }
+
+  /* ── Stripe Payment Element internals ──────────────────────────
+     Caveat: Stripe's .p-* class names are internal and undocumented
+     as a stable API. Same risk profile as our existing .kinde-*
+     class targeting above — if Stripe rotates the class scheme in
+     a future Payment Element release we'll need to revisit. The
+     alternative is passing an appearance config when initializing
+     Stripe.js, but Kinde owns that init, not us.
+
+     DOM verified on auth-dev.futuros.io during a fresh
+     collect_payment_details flow on 2026-05-19. */
+
+  /* Input wrappers — the actual border / background lives on
+     .p-Input (the inner .p-Input-input is transparent). */
+  .kinde-stripe-payment-form .p-Input,
+  [data-kinde-stripe-payment-form="true"] .p-Input {
+    background: ${tokens.surface3} !important;
+    border: 1px solid ${tokens.line} !important;
+    color: ${tokens.ink} !important;
+    border-radius: ${tokens.rMd} !important;
+    transition: border-color 180ms, box-shadow 180ms;
+  }
+  .kinde-stripe-payment-form .p-Input:hover,
+  [data-kinde-stripe-payment-form="true"] .p-Input:hover {
+    border-color: ${tokens.lineStrong} !important;
+  }
+  .kinde-stripe-payment-form .p-Input:focus-within,
+  [data-kinde-stripe-payment-form="true"] .p-Input:focus-within {
+    border-color: ${tokens.lineAccent} !important;
+    box-shadow: 0 0 0 3px hsla(40, 60%, 56%, 0.08) !important;
+  }
+
+  /* Inputs themselves — transparent so the wrapper's bg shows
+     through. Text color forced to our ink token so the value the
+     user types is actually visible. */
+  .kinde-stripe-payment-form .p-Input-input,
+  .kinde-stripe-payment-form .Input,
+  .kinde-stripe-payment-form .p-Fieldset-input,
+  [data-kinde-stripe-payment-form="true"] .p-Input-input,
+  [data-kinde-stripe-payment-form="true"] .Input,
+  [data-kinde-stripe-payment-form="true"] .p-Fieldset-input {
+    background: transparent !important;
+    border: none !important;
+    color: ${tokens.ink} !important;
+    font-family: ${tokens.mono} !important;
+    font-size: 13.5px !important;
+    padding: 11px 14px !important;
+    box-shadow: none !important;
+  }
+  .kinde-stripe-payment-form .p-Input-input::placeholder,
+  [data-kinde-stripe-payment-form="true"] .p-Input-input::placeholder {
+    font-family: ${tokens.sans} !important;
+    color: ${tokens.inkMute} !important;
+    opacity: 0.7;
+  }
+
+  /* Country / phone-country <select> — same dark surface as the
+     other inputs. The flag icon next to it keeps its native colors. */
+  .kinde-stripe-payment-form .p-PhoneNumberCountrySelect-select,
+  [data-kinde-stripe-payment-form="true"] .p-PhoneNumberCountrySelect-select {
+    color: ${tokens.ink} !important;
+    background: transparent !important;
+  }
+  .kinde-stripe-payment-form .p-Icon--chevronDown,
+  [data-kinde-stripe-payment-form="true"] .p-Icon--chevronDown {
+    fill: ${tokens.inkMute} !important;
+  }
+
+  /* Field labels — Expiration (MM/YY), Security code, Country,
+     Email, Mobile number, Full name. Default is dark text; force
+     mono uppercase mute like the rest of our form labels. */
+  .kinde-stripe-payment-form .p-FieldLabel,
+  .kinde-stripe-payment-form .Label,
+  [data-kinde-stripe-payment-form="true"] .p-FieldLabel,
+  [data-kinde-stripe-payment-form="true"] .Label {
+    font-family: ${tokens.mono} !important;
+    font-size: 10px !important;
+    color: ${tokens.inkMute} !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  /* Terms disclaimer text (the "By providing your card information,
+     you allow FUTUROS.IO to charge..." line + the "By providing
+     phone number..." Link terms below the opt-in block). Default
+     Stripe class is u-color-textSecondary which collapses to a
+     near-invisible dark grey on dark surface. */
+  .kinde-stripe-payment-form .p-TermsText,
+  .kinde-stripe-payment-form .TermsText,
+  .kinde-stripe-payment-form .u-color-textSecondary,
+  [data-kinde-stripe-payment-form="true"] .p-TermsText,
+  [data-kinde-stripe-payment-form="true"] .TermsText,
+  [data-kinde-stripe-payment-form="true"] .u-color-textSecondary {
+    color: ${tokens.inkSoft} !important;
+  }
+  .kinde-stripe-payment-form .TermsLink,
+  [data-kinde-stripe-payment-form="true"] .TermsLink {
+    color: ${tokens.gold} !important;
+  }
+  .kinde-stripe-payment-form .TermsLink:hover,
+  [data-kinde-stripe-payment-form="true"] .TermsLink:hover {
+    color: ${tokens.goldSoft} !important;
+  }
+
+  /* Link "Save my information for faster checkout" opt-in block.
+     The .p-Block default is light-mode (white background, dark
+     text) — utterly broken on our dark theme. Anchor on
+     :has(.p-LinkOptIn-header) so we don't accidentally style any
+     OTHER .p-Block elsewhere in the form. */
+  .kinde-stripe-payment-form .p-Block:has(.p-LinkOptIn-header),
+  [data-kinde-stripe-payment-form="true"] .p-Block:has(.p-LinkOptIn-header) {
+    background: ${tokens.surface2} !important;
+    border: 1px solid ${tokens.line} !important;
+    border-radius: ${tokens.rMd};
+    padding: 16px 18px;
+    margin-top: 14px;
+    color: ${tokens.ink};
+  }
+
+  /* "Save my information for faster checkout" headline inside the
+     opt-in block. */
+  .kinde-stripe-payment-form .p-LinkOptIn-labelText,
+  [data-kinde-stripe-payment-form="true"] .p-LinkOptIn-labelText {
+    color: ${tokens.ink} !important;
+    font-family: ${tokens.sans};
+    font-weight: 500;
+    margin-left: 8px;
+  }
+
+  /* "Optional" badge — small mono uppercase pill, gold accent so it
+     matches the brand and clearly reads as a tag. */
+  .kinde-stripe-payment-form .p-LinkOptInOptionalBadge,
+  [data-kinde-stripe-payment-form="true"] .p-LinkOptInOptionalBadge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 2px 8px !important;
+    background: ${tokens.goldBg} !important;
+    border: 1px solid ${tokens.lineAccent} !important;
+    border-radius: ${tokens.rPill} !important;
+  }
+  .kinde-stripe-payment-form .p-LinkOptInOptionalBadge p,
+  [data-kinde-stripe-payment-form="true"] .p-LinkOptInOptionalBadge p {
+    color: ${tokens.gold} !important;
+    font-family: ${tokens.mono} !important;
+    font-size: 9.5px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+
+  /* Spacing between fields inside the opt-in block. */
+  .kinde-stripe-payment-form .p-LinkOptIn-body .p-Field,
+  [data-kinde-stripe-payment-form="true"] .p-LinkOptIn-body .p-Field {
+    margin-bottom: 12px;
+  }
+
+  /* Link logo inside the terms-consolidated text below the opt-in.
+     The default has opacity:0.3 which is too washed-out against our
+     dark surface — bump to readable but still muted. */
+  .kinde-stripe-payment-form .p-LinkTermsConsolidated-logo,
+  [data-kinde-stripe-payment-form="true"] .p-LinkTermsConsolidated-logo {
+    opacity: 0.7 !important;
   }
 
   /* Alert banners (Stripe payment errors, noscript warning, etc.). */
