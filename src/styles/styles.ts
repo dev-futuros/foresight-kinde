@@ -928,6 +928,53 @@ export const getStyles = (): string => `
     color: ${tokens.gold} !important;
   }
 
+  /* Vertical rhythm — Kinde's bare defaults stack the page's section
+     headings (Subscription payment, Selected plan, Pro, Credit card
+     details) flush against each other with no breathing room. Add
+     margins back so each section reads as its own block. Also pad
+     the .kinde-card-is-accent-color "Selected plan" pill which is
+     otherwise a single-line strip with the price text squeezed
+     against its top edge. */
+  body:has(.kinde-stripe-payment-form) .auth-card h1 {
+    margin-bottom: 24px !important;
+  }
+  body:has(.kinde-stripe-payment-form) .kinde-layout-widget .kinde-heading-variant-medium,
+  body:has(.kinde-stripe-payment-form)
+    .kinde-layout-widget
+    [data-kinde-heading-variant="medium"] {
+    margin: 20px 0 10px !important;
+    font-weight: 500;
+  }
+  body:has(.kinde-stripe-payment-form) .kinde-card-is-accent-color,
+  body:has(.kinde-stripe-payment-form) [data-kinde-card-is-accent-color="true"] {
+    padding: 14px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  /* Inside the accent pill, the "Pro" heading defaulted to variant-
+     medium which we just gave a big top margin above — undo that for
+     this in-pill usage so it sits flush at the top of the pill, not
+     halfway down. */
+  body:has(.kinde-stripe-payment-form) .kinde-card-is-accent-color .kinde-heading-variant-medium,
+  body:has(.kinde-stripe-payment-form)
+    [data-kinde-card-is-accent-color="true"]
+    [data-kinde-heading-variant="medium"] {
+    margin: 0 !important;
+  }
+  /* Stripe form wrapper — give it room above "Credit card details"
+     so the heading + lock-icon + iframe block sits clear of the
+     accent pill above. */
+  body:has(.kinde-stripe-payment-form) .kinde-stripe-payment-form {
+    margin-top: 8px !important;
+  }
+  /* Primary "Subscribe and pay now" button — bit of room above so it
+     doesn't sit right under the Stripe iframe. */
+  body:has(.kinde-stripe-payment-form) .kinde-stripe-payment-form .kinde-button-variant-primary {
+    margin-top: 18px !important;
+  }
+
   /* Alert banners (Stripe payment errors, noscript warning, etc.). */
   .kinde-alert-banner,
   [data-kinde-alert-banner="true"] {
