@@ -637,6 +637,28 @@ export const getStyles = (): string => `
     margin-top: 6px !important;
   }
 
+  /* Single-plan special case — when the plans grid contains exactly
+     one .kinde-card (e.g. only "Pro" is published; the Free / trial
+     tier was removed), the default 2-col grid leaves an empty cell
+     and the lone card sits awkwardly in the left half of a 720px
+     auth-card. Override both axes:
+       1. Narrow the auth-card back to its login-width (420px) so the
+          whitespace around the single card matches what the user
+          already knows from sign-in / sign-up.
+       2. Collapse the grid to one column so the card fills the
+          narrowed wrapper end-to-end.
+     Uses :has(...:only-child) — supported in all evergreen browsers
+     since 2023, which is the same support floor as the rest of this
+     stylesheet's :has() usage above. */
+  .auth-card:has(.kinde-layout-plans > .kinde-card:only-child),
+  .auth-card:has([data-kinde-layout-plans="true"] > [data-kinde-card="true"]:only-child) {
+    max-width: 420px;
+  }
+  .auth-card:has(.kinde-layout-plans > .kinde-card:only-child) .kinde-layout-plans,
+  .auth-card:has([data-kinde-layout-plans="true"] > [data-kinde-card="true"]:only-child) [data-kinde-layout-plans="true"] {
+    grid-template-columns: 1fr !important;
+  }
+
   /* Per-plan card — Kinde's own .kinde-card, NOT our outer .auth-card. */
   .kinde-layout-plans .kinde-card,
   [data-kinde-layout-plans="true"] [data-kinde-card="true"] {
