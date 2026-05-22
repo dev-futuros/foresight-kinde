@@ -354,8 +354,12 @@ export const getStyles = (): string => `
     outline-offset: 2px !important;
   }
 
-  /* ── Social / OAuth provider buttons ──────────────────────────── */
-  /* The buttons themselves: dark surface, icon-only (text hidden). */
+  /* ── Secondary buttons (base look) ────────────────────────────── */
+  /* Surface/border styling applies to ALL secondary buttons: social
+     OAuth providers (login), MFA method picker ("Verify your identity"
+     → Authenticator / SMS / Email), and anything else Kinde renders
+     with this variant. Only the icon-only sizing & text hiding below
+     are scoped to the social-button container — see next block. */
   .kinde-button-variant-secondary,
   [data-kinde-button][data-kinde-button-variant="secondary"] {
     background: ${tokens.surface3} !important;
@@ -364,18 +368,14 @@ export const getStyles = (): string => `
     border-radius: ${tokens.rMd} !important;
     cursor: pointer;
     transition: background 150ms, border-color 150ms !important;
-    /* icon-only sizing — fill the grid cell, ~44px tall */
+    font-family: ${tokens.sans} !important;
+    font-size: 13.5px !important;
+    padding: 11px 16px !important;
     width: 100% !important;
-    padding: 10px !important;
-    min-height: 44px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0 !important;
-    /* hide the "Continue with X" text, keep the inline SVG visible */
-    font-size: 0 !important;
-    text-indent: -9999px;
-    overflow: hidden;
+    gap: 10px !important;
   }
   .kinde-button-variant-secondary:hover,
   [data-kinde-button][data-kinde-button-variant="secondary"]:hover {
@@ -383,9 +383,26 @@ export const getStyles = (): string => `
     color: ${tokens.ink} !important;
     border-color: ${tokens.lineStrong} !important;
   }
+
+  /* ── Social / OAuth provider buttons (icon-only treatment) ────── */
+  /* Only buttons inside the auth-buttons grid get the icon-only look:
+     square cells, hidden label text, just the provider SVG. MFA method
+     buttons live outside this container and so keep their labels. */
+  .kinde-layout-auth-buttons .kinde-button-variant-secondary,
+  ul[data-kinde-layout-auth-buttons="true"]
+    [data-kinde-button][data-kinde-button-variant="secondary"] {
+    padding: 10px !important;
+    min-height: 44px !important;
+    gap: 0 !important;
+    /* hide the "Continue with X" text, keep the inline SVG visible */
+    font-size: 0 !important;
+    text-indent: -9999px;
+    overflow: hidden;
+  }
   /* Restore the SVG icon (we killed font-size on the button). */
-  .kinde-button-variant-secondary .kinde-icon,
-  [data-kinde-button][data-kinde-button-variant="secondary"] svg {
+  .kinde-layout-auth-buttons .kinde-button-variant-secondary .kinde-icon,
+  ul[data-kinde-layout-auth-buttons="true"]
+    [data-kinde-button][data-kinde-button-variant="secondary"] svg {
     text-indent: 0 !important;
     font-size: initial !important;
     width: 20px !important;
